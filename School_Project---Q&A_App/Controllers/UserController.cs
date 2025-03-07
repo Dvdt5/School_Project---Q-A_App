@@ -33,6 +33,8 @@ namespace School_Project___Q_A_App.Controllers
         [HttpPost]
         public async Task<User> Add(User user)
         {
+            user.Created = DateTime.Now;
+            user.Updated = DateTime.Now;
             await _userRepository.AddAsync(user);
             return user;
         }
@@ -40,6 +42,7 @@ namespace School_Project___Q_A_App.Controllers
         [HttpPut]
         public async Task<User> Update (User user)
         {
+            user.Updated = DateTime.Now;
             await _userRepository.UpdateAsync(user);
             return user;
         }
