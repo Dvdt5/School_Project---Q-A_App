@@ -1,48 +1,56 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using School_Project___Q_A_App.DTOs;
 using School_Project___Q_A_App.Models;
 using School_Project___Q_A_App.Repositories;
 
 namespace School_Project___Q_A_App.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly UserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserController(UserRepository userRepository)
+        public UserController(UserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<List<User>> List()
+        public async Task<List<UserDto>> List()
         {
             var users = await _userRepository.GetAllAsync();
-            return users;
+            var userDtos = _mapper.Map<List<UserDto>>(users);
+            return userDtos;
         }
 
         [HttpGet("{id}")]
-        public async Task<User> GetById(int id)
+        public async Task<UserDto> GetById(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            return user;
+            var userDto = _mapper.Map<UserDto>(user);
+            return userDto;
         }
 
         [HttpPost]
-        public async Task<User> Add(User user)
+        public async Task<User> Add(UserDto userDto)
         {
-            user.Created = DateTime.Now;
-            user.Updated = DateTime.Now;
+            userDto.Created = DateTime.Now;
+            userDto.Updated = DateTime.Now;
+            var user = _mapper.Map<User>(userDto);
             await _userRepository.AddAsync(user);
             return user;
         }
 
         [HttpPut]
-        public async Task<User> Update (User user)
+        public async Task<User> Update (UserDto userDto)
         {
-            user.Updated = DateTime.Now;
+            userDto.Updated = DateTime.Now;
+            var user = _mapper.Map<User>(userDto);
             await _userRepository.UpdateAsync(user);
             return user;
         }
