@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Users</h1>
+
+<table id="userTable">
+    <thead>
+        <tr>
+            <td>Id</td>
+            <td>UserName</td>
+            <td>Email</td>
+            <td>Created</td>
+            <td>Updated</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+@section Scripts{
+<script>
+$(document).ready(function(){
+    var apiBaseUrl="@ViewBag.ApiBaseURL";
+    GetUserList();
+
+    function GetUserList(){
+        $.ajax({
+         url: apiBaseUrl + "/User",
+         type: "GET",
+         success: function (d) {
+                UserToTable(d)
+         },
+         error:  function (d) {
+         },
+        });
+    }
+
+    function UserToTable(data){
+        console.log(data);
+        $("#userTable tbody").empty();
+        var row="";
+        $.each(data,function(i,item){
+			row+= "<tr>";
+			row+= "<td>" + item.id + "</td>";
+			row+= "<td>" + item.userName + "</td>";
+			row+= "<td>" + item.email + "</td>";
+			row+= "<td>" + item.created + "</td>";
+			row+= "<td>" + item.updated + "</td>";
+			row+= "</tr>";
+        });
+        $("#userTable tbody").append(row);
+
+    }
+
+});
+
+
+</script>
+}

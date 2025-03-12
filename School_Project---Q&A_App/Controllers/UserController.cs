@@ -7,7 +7,7 @@ using School_Project___Q_A_App.Repositories;
 
 namespace School_Project___Q_A_App.Controllers
 {
-    [Route("/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {

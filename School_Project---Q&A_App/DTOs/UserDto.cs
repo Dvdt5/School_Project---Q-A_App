@@ -2,7 +2,7 @@
 
 namespace School_Project___Q_A_App.DTOs
 {
-    public class UserDto
+    public class UserDto : BaseDto
     {
         [Display(Name = "UserName")]
         [Required(ErrorMessage = "Please enter an Username!")]
@@ -12,7 +12,7 @@ namespace School_Project___Q_A_App.DTOs
         [Required(ErrorMessage = "Please enter an Email!")]
         public string Email { get; set; }
 
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public string Password { get; set; }
+
     }
 }
