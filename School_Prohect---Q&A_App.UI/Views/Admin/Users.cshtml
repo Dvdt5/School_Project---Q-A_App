@@ -6,16 +6,18 @@
 
 <h1>Users</h1>
 
+
 <div class="col-12 container">
     <div class="row justify-content-between">
-
-        <div class="col card card-body col-6 p-0">
+        <div class="col col-md-7">
+        <div class=" card card-body p-0">
             <table id="userTable" class="col-12 table table-hover table-bordered m-0">
                 <thead>
                     <tr>
                         <td>Id</td>
                         <td>UserName</td>
                         <td>Email</td>
+                        <td>Status</td>
                         <td>Created</td>
                         <td>Updated</td>
                     </tr>
@@ -27,8 +29,26 @@
                 </tbody>
             </table>
         </div>
-        <div class="col card card-body col-5">
 
+        </div>
+        <div class=" card card-body col-md-5">
+            <input type="text"
+				   class="form-control mb-3"
+				   placeholder="UserName"
+				   id="userNameInput" />
+            <input 
+                type="text"
+                class="form-control mb-3"
+				placeholder="Email"
+                id="emailInput" />
+			<input 
+                type="password"
+                class="form-control mb-3"
+                placeholder="Password" 
+                id="passwordInput" />
+            <div class="row mt-1">
+                <button class="btn btn-success mx-2" id="addUserBtn">Create</button>
+            </div>
         </div>
     </div>
 </div>
@@ -48,12 +68,12 @@ $(document).ready(function(){
                 UserToTable(d)
          },
          error:  function (d) {
+            $("#userTable tbody").empty();
          },
         });
     }
 
     function UserToTable(data){
-        console.log(data);
         $("#userTable tbody").empty();
         var row="";
         $.each(data,function(i,item){
@@ -61,6 +81,13 @@ $(document).ready(function(){
 			row+= "<td>" + item.id + "</td>";
 			row+= "<td>" + item.userName + "</td>";
 			row+= "<td>" + item.email + "</td>";
+            if (item.is_Active){
+                row+= "<td><span class='badge badge-success p-2'>Active</span></td>";
+            }
+            else {
+                row+= "<td><span class='badge badge-warning p-2'>DeActive</span></td>";
+            }
+            
 			row+= "<td>" + FormatDate(item.created) + "</td>";
             row+= "<td>" + FormatDate(item.updated) + "</td>";
 			row+= "</tr>";
@@ -69,7 +96,33 @@ $(document).ready(function(){
 
     }
 
-});
+    $("#addUserBtn").click(function(){
+        var userName = $("#userNameInput").val();
+        var email = $("#emailInput").val();
+        var password = $("#passwordInput").val();
+        var newUser = new Object();
+        newUser.userName = userName;
+        newUser.email = email;
+        newUser.password = password;
+
+        $.ajax({
+           url: apiBaseUrl + "/User",
+           type: "POST",
+           data: JSON.stringify(newUser),
+           contentType: "application/json",
+           success: function (d) {
+                GetUserList();
+                $("#userNameInput").val('');
+                $("#emailInput").val('');
+                $("#passwordInput").val('');
+           },
+           error:  function (d) {},
+
+        });
+    });
+        
+    
+    });
 
 
 </script>

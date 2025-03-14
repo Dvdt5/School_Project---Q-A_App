@@ -41,6 +41,7 @@ namespace School_Project___Q_A_App.Controllers
         {
             userDto.Created = DateTime.Now;
             userDto.Updated = DateTime.Now;
+            userDto.Is_Active = false;
             var user = _mapper.Map<User>(userDto);
             await _userRepository.AddAsync(user);
             return user;
