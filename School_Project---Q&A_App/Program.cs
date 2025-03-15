@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped(typeof(GenericRepository<>));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PostRepository>();
+builder.Services.AddScoped<CategoryRepository>();
 
 // Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
