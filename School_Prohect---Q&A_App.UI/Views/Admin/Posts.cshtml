@@ -1,0 +1,121 @@
+﻿
+@{
+    ViewData["Title"] = "Posts";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Posts</h1>
+
+<div class="col-12 container">
+    <div class="row justify-content-between">
+        <div class="col col-md-7">
+            <div class=" card card-body p-0">
+                <table id="postTable" class="col-12 table table-hover table-bordered m-0">
+                    <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Title</td>
+                            <td>Content</td>
+                            <td>CategoryId</td>
+                            <td>UserId</td>
+                            <td>Status</td>
+                            <td>Created</td>
+                            <td>Updated</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class=" card card-body col-md-5">
+            <input type="text"
+                   class="form-control mb-3"
+                   placeholder="Title"
+                   id="titleInput" />
+            
+            <textarea id="contentInput" placeholder="Content" class="form-control mb-3" style="resize: none;" rows="4"></textarea>
+            <div class="row mt-1">
+                <button class="btn btn-success mx-2" id="addPostBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+            GetPostList();
+
+            function GetPostList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Post",
+                 type: "GET",
+                 success: function (d) {
+                        PostToTable(d)
+                 },
+                 error:  function (d) {
+                    $("#postTable tbody").empty();
+                 },
+                });
+            }
+
+            function PostToTable(data){
+                $("#postTable tbody").empty();
+                var row="";
+                $.each(data,function(i,item){
+                    row+= "<tr>";
+                    row+= "<td>" + item.id + "</td>";
+                    row+= "<td>" + item.title + "</td>";
+                    row+= "<td>" + item.content + "</td>";
+                    row+= "<td>" + item.categoryId + "</td>";
+					row+= "<td>" + item.userId + "</td>";
+                    if (item.is_Active){
+                        row+= "<td><span class='badge badge-success p-2'>Active</span></td>";
+                    }
+                    else {
+                        row+= "<td><span class='badge badge-warning p-2'>DeActive</span></td>";
+                    }
+
+                    row+= "<td>" + FormatDate(item.created) + "</td>";
+                    row+= "<td>" + FormatDate(item.updated) + "</td>";
+                    row+= "</tr>";
+                });
+                $("#postTable tbody").append(row);
+
+            }
+
+            $("#addPostBtn").click(function(){
+                var title = $("#titleInput").val();
+                var content = $("#contentInput").val();
+                var newPost = new Object();
+                newPost.title = title;
+                newPost.content = content;
+
+                $.ajax({
+                   url: apiBaseUrl + "/User",
+                   type: "POST",
+                   data: JSON.stringify(newPost),
+                   contentType: "application/json",
+                   success: function (d) {
+                        GetPostList();
+                        $("#titleInput").val('');
+                        $("#contentInput").val('');
+                   },
+                   error:  function (d) {},
+
+                });
+            });
+
+
+        });
+
+
+    </script>
+}

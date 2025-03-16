@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Categories</h1>
+
+<div class="col-12 container">
+    <div class="row justify-content-between">
+        <div class="col col-md-7">
+            <div class=" card card-body p-0">
+                <table id="categoryTable" class="col-12 table table-hover table-bordered m-0">
+                    <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Name</td>
+                            <td>Status</td>
+                            <td>Created</td>
+                            <td>Updated</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class=" card card-body col-md-5">
+            <input type="text"
+                   class="form-control mb-3"
+                   placeholder="Name"
+                   id="categoryNameInput" />
+            <div class="row mt-1">
+                <button class="btn btn-success mx-2" id="addCategoryBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+            GetCategoryList();
+
+            function GetCategoryList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Category",
+                 type: "GET",
+                 success: function (d) {
+                        CategoryToTable(d)
+                 },
+                 error:  function (d) {
+                    $("#categoryTable tbody").empty();
+                 },
+                });
+            }
+
+            function CategoryToTable(data){
+                $("#categoryTable tbody").empty();
+                var row="";
+                $.each(data,function(i,item){
+                    row+= "<tr>";
+                    row+= "<td>" + item.id + "</td>";
+                    row+= "<td>" + item.name + "</td>";
+                    if (item.is_Active){
+                        row+= "<td><span class='badge badge-success p-2'>Active</span></td>";
+                    }
+                    else {
+                        row+= "<td><span class='badge badge-warning p-2'>DeActive</span></td>";
+                    }
+
+                    row+= "<td>" + FormatDate(item.created) + "</td>";
+                    row+= "<td>" + FormatDate(item.updated) + "</td>";
+                    row+= "</tr>";
+                });
+                $("#categoryTable tbody").append(row);
+
+            }
+
+            $("#addCategoryBtn").click(function(){
+                var categoryName = $("#categoryNameInput").val();
+                var newCategory = new Object();
+                newCategory.name = categoryName;
+
+                $.ajax({
+                   url: apiBaseUrl + "/Category",
+                   type: "POST",
+                   data: JSON.stringify(newCategory),
+                   contentType: "application/json",
+                   success: function (d) {
+                        GetCategoryList();
+                        $("#categoryNameInput").val('');
+                   },
+                   error:  function (d) {},
+
+                });
+            });
+
+
+        });
+
+
+    </script>
+}
