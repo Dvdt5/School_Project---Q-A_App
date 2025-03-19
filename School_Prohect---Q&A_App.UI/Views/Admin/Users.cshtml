@@ -31,7 +31,9 @@
         </div>
 
         </div>
-        <div class=" card card-body col-md-5">
+        <div class="col col-md-5">
+
+        <div class=" card card-body">
             <input type="text"
 				   class="form-control mb-3"
 				   placeholder="UserName"
@@ -49,6 +51,7 @@
             <div class="row mt-1">
                 <button class="btn btn-success mx-2" id="addUserBtn">Create</button>
             </div>
+        </div>
         </div>
     </div>
 </div>
@@ -116,7 +119,10 @@ $(document).ready(function(){
                 $("#emailInput").val('');
                 $("#passwordInput").val('');
            },
-           error:  function (d) {},
+           error:  function (d) {
+                var errors = d.responseJSON.errors;
+                alert(Object.values(errors)[0][0]);
+           },
 
         });
     });

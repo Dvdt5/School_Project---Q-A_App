@@ -1,4 +1,5 @@
 ﻿using School_Project___Q_A_App.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace School_Project___Q_A_App.DTOs
 {
