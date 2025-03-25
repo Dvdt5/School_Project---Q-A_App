@@ -51,6 +51,7 @@
             <div class="row mt-1">
                 <button class="btn btn-success mx-2" id="addUserBtn">Create</button>
             </div>
+            <div id="divResult" style="display: none;"></div>
         </div>
         </div>
     </div>
@@ -120,8 +121,10 @@ $(document).ready(function(){
                 $("#passwordInput").val('');
            },
            error:  function (d) {
-                var errors = d.responseJSON.errors;
-                alert(Object.values(errors)[0][0]);
+           var errors = d.responseJSON.errors;
+           $("#divResult").fadeIn(1000);
+           $("#divResult").addClass("alert alert-danger m-3 ");
+           $("#divResult").html(Object.values(errors)[0][0]);
            },
 
         });

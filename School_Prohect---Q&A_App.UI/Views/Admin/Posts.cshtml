@@ -44,6 +44,7 @@
             <div class="row mt-1">
                 <button class="btn btn-success mx-2" id="addPostBtn">Create</button>
             </div>
+            <div id="divResult" style="display: none;"></div>
         </div>
         </div>
     </div>
@@ -111,7 +112,14 @@
                         $("#titleInput").val('');
                         $("#contentInput").val('');
                    },
-                   error:  function (d) {},
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
 
                 });
             });

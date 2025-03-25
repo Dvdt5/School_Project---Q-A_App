@@ -22,7 +22,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td></td>
+                            <td colspan="5"><p>Loading...</p></td>
+
                         </tr>
                     </tbody>
                 </table>
@@ -32,13 +33,18 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
+            <input type="hidden" id="categoryIdInput"/>
             <input type="text"
                    class="form-control mb-3"
                    placeholder="Name"
                    id="categoryNameInput" />
             <div class="row mt-1">
-                <button class="btn btn-success mx-2" id="addCategoryBtn">Create</button>
+                <button class="btn btn-success mx-3" id="addCategoryBtn">Create</button>
+                <button class="btn btn-warning mx-3" id="updateCategoryBtn">Update</button>
+                <button class="btn btn-danger mx-3" id="deleteCategoryBtn">Delete</button>
+                <button class="btn btn-primary mx-3" id="cancelCategoryBtn">Cancel</button>
             </div>
+            <div id="divResult" style="display: none;"></div>
         </div>
         </div>
     </div>
@@ -48,6 +54,10 @@
 @section Scripts {
     <script>
         $(document).ready(function(){
+            $("#updateCategoryBtn").hide();
+            $("#deleteCategoryBtn").hide();
+            $("#cancelCategoryBtn").hide();
+
             var apiBaseUrl="@ViewBag.ApiBaseURL";
             GetCategoryList();
 
@@ -59,7 +69,9 @@
                         CategoryToTable(d)
                  },
                  error:  function (d) {
+                    console.log(d);
                     $("#categoryTable tbody").empty();
+                    $("#categoryTable tbody").append("<tr><td class='p-3' colspan='5'><div class='alert alert-danger'>Something went wrong.</div></td></tr>");
                  },
                 });
             }
@@ -68,8 +80,8 @@
                 $("#categoryTable tbody").empty();
                 var row="";
                 $.each(data,function(i,item){
-                    row+= "<tr>";
-                    row+= "<td>" + item.id + "</td>";
+                    row += `<tr class="categoryRow" data-id="${item.id}">`;
+                    row += "<td>" + item.id + "</td>";
                     row+= "<td>" + item.name + "</td>";
                     if (item.is_Active){
                         row+= "<td><span class='badge badge-success p-2'>Active</span></td>";
@@ -87,6 +99,7 @@
             }
 
             $("#addCategoryBtn").click(function(){
+                $("#divResult").hide();
                 var categoryName = $("#categoryNameInput").val();
                 var newCategory = new Object();
                 newCategory.name = categoryName;
@@ -100,12 +113,56 @@
                         GetCategoryList();
                         $("#categoryNameInput").val('');
                    },
-                   error:  function (d) {},
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
 
+                   $("#divResult").fadeIn(1000);
+                   
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   
+                   
+                   },
                 });
             });
 
+            $(document).on("click",".categoryRow",function(){
+            var id=$(this).attr("data-id");
+            $(".categoryRow").removeClass("bg-secondary text-white");
+            $(this).addClass("bg-secondary text-white");
+            $("#updateCategoryBtn").hide();
+            $("#deleteCategoryBtn").hide();
+            $("#cancelCategoryBtn").hide();
+            $("#addCategoryBtn").hide();
+            
 
+            $.ajax({
+               url: apiBaseUrl + "/Category/"+ id,
+               type: "GET",
+               contentType: "application/json",
+               success: function (d) {
+                   $("categoryIdInput").val(id);
+                   $("#categoryNameInput").val(d.name);
+                   $("#categoryNameInput").focus();
+               },
+               error:  function (d) {},
+            });
+
+            $("#updateCategoryBtn").fadeIn(1000);
+            $("#deleteCategoryBtn").fadeIn(1000);
+            $("#cancelCategoryBtn").fadeIn(1000);
+
+            });
+
+            $("#cancelCategoryBtn").click(function(){
+                $("categoryIdInput").val("");
+                $("#categoryNameInput").val("");
+                $("#updateCategoryBtn").hide();
+                $("#deleteCategoryBtn").hide();
+                $("#cancelCategoryBtn").hide();
+                $("#addCategoryBtn").fadeIn(1400);
+                $(".categoryRow").removeClass("bg-secondary text-white");
+            });
         });
 
 
