@@ -33,6 +33,7 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
+            
             <input type="hidden" id="categoryIdInput"/>
             <input type="text"
                    class="form-control mb-3"
@@ -190,6 +191,40 @@
                 
             
             });
+
+            $("#updateCategoryBtn").click(function(){
+                $("#divResult").hide();
+                
+                var categoryName = $("#categoryNameInput").val();
+                var newCategory = new Object();
+                newCategory.name = categoryName;
+                newCategory.id = $("#categoryIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/Category",
+                   type: "PUT",
+                   data: JSON.stringify(newCategory),
+                   contentType: "application/json",
+                   success: function (d) {
+                   $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html("Category Updated Successfuly!");
+                       $("#divResult").fadeOut(1000);
+                    $("#categoryIdInput").val("");
+                    $("#categoryNameInput").val("");
+                    $("#updateCategoryBtn").hide();
+                    $("#deleteCategoryBtn").hide();
+                    $("#cancelCategoryBtn").hide();
+                    $("#addCategoryBtn").fadeIn(1400);
+                    $(".categoryRow").removeClass("bg-secondary text-white");
+                    GetCategoryList();
+                   },
+                   error:  function (d) {
+                   console.log(d);
+                   },
+                });
+            });
+
             $("#cancelCategoryBtn").click(function(){
                 $("#categoryIdInput").val("");
                 $("#categoryNameInput").val("");

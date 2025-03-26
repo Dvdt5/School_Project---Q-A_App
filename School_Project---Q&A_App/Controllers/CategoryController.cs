@@ -48,15 +48,22 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpPut]
-        public async Task<Category> Update(CategoryDto categoryDto)
+        public async Task<ResultDto> Update(CategoryDto categoryDto)
         {
-            categoryDto.Updated = DateTime.Now;
-            var category = _mapper.Map<Category>(categoryDto);
-            await _categoryRepository.UpdateAsync(category);
-            return category;
-        }
+            ResultDto response = new ResultDto
+            {
+                Success = true,
+                Message = "Category Updated Successfuly!"
+            };
+            
+            var category = await _categoryRepository.GetByIdAsync(categoryDto.Id);
+            category.Name = categoryDto.Name;
+            category.Is_Active = false;
+            category.Updated = DateTime.Now;
 
-        [HttpDelete("{id}")]
+            await _categoryRepository.UpdateAsync(category);
+            return response;
+        }
         public async Task<ResultDto> Delete(int id)
         {
             ResultDto response = new ResultDto
