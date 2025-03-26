@@ -127,7 +127,8 @@
             });
 
             $(document).on("click",".categoryRow",function(){
-            var id=$(this).attr("data-id");
+            var id = $(this).attr("data-id");
+            
             $(".categoryRow").removeClass("bg-secondary text-white");
             $(this).addClass("bg-secondary text-white");
             $("#updateCategoryBtn").hide();
@@ -141,7 +142,8 @@
                type: "GET",
                contentType: "application/json",
                success: function (d) {
-                   $("categoryIdInput").val(id);
+                   $("#categoryIdInput").val(id);
+                   
                    $("#categoryNameInput").val(d.name);
                    $("#categoryNameInput").focus();
                },
@@ -151,17 +153,52 @@
             $("#updateCategoryBtn").fadeIn(1000);
             $("#deleteCategoryBtn").fadeIn(1000);
             $("#cancelCategoryBtn").fadeIn(1000);
-
+            
             });
 
+            $("#deleteCategoryBtn").click(function(){
+                var id = $("#categoryIdInput").val();
+                
+                $.ajax({
+                   url: apiBaseUrl + "/Category/"+ id,
+                   type: "DELETE",
+                   contentType: "application/json",
+                   success: function (d) {
+                    if (d.success) {
+                       
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+                       $("#categoryIdInput").val("");
+                        $("#categoryNameInput").val("");
+                        $("#updateCategoryBtn").hide();
+                        $("#deleteCategoryBtn").hide();
+                        $("#cancelCategoryBtn").hide();
+                        $("#addCategoryBtn").fadeIn(1400);
+                        $(".categoryRow").removeClass("bg-secondary text-white");
+                       GetCategoryList();
+                   } else {
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-danger m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+                   }
+                   },
+                   error:  function (d) {},
+                });
+                
+            
+            });
             $("#cancelCategoryBtn").click(function(){
-                $("categoryIdInput").val("");
+                $("#categoryIdInput").val("");
                 $("#categoryNameInput").val("");
                 $("#updateCategoryBtn").hide();
                 $("#deleteCategoryBtn").hide();
                 $("#cancelCategoryBtn").hide();
                 $("#addCategoryBtn").fadeIn(1400);
                 $(".categoryRow").removeClass("bg-secondary text-white");
+
             });
         });
 

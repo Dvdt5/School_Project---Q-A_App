@@ -11,12 +11,14 @@ namespace School_Project___Q_A_App.Controllers
     public class CategoryController : Controller
     {
         private readonly CategoryRepository _categoryRepository;
+        private readonly PostRepository _postRepository;
         private readonly IMapper _mapper;
 
-        public CategoryController(CategoryRepository categoryRepository, IMapper mapper)
+        public CategoryController(CategoryRepository categoryRepository, IMapper mapper, PostRepository postRepository)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
+            _postRepository = postRepository;
         }
 
         [HttpGet]
@@ -54,11 +56,26 @@ namespace School_Project___Q_A_App.Controllers
             return category;
         }
 
-        [HttpDelete]
-        public async Task<List<Category>> Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<ResultDto> Delete(int id)
         {
+            ResultDto response = new ResultDto
+            {
+                Success = true,
+                Message = "Category Deleted Successfuly!"
+            };
+            var posts = await _postRepository.GetAllAsync();
+            foreach (var post in posts)
+            {
+                if (post.CategoryId == id)
+                {
+                    response.Success = false;
+                    response.Message = "Category has items, cannot be deleted!";
+                    return response;
+                }
+            }
             await _categoryRepository.DeleteAsync(id);
-            return await _categoryRepository.GetAllAsync();
+            return response;
         }
     }
 }
