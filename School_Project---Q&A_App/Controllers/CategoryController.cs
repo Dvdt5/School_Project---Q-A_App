@@ -58,12 +58,14 @@ namespace School_Project___Q_A_App.Controllers
             
             var category = await _categoryRepository.GetByIdAsync(categoryDto.Id);
             category.Name = categoryDto.Name;
-            category.Is_Active = false;
+            category.Is_Active = categoryDto.Is_Active;
             category.Updated = DateTime.Now;
 
             await _categoryRepository.UpdateAsync(category);
             return response;
         }
+
+        [HttpDelete("{id}")]
         public async Task<ResultDto> Delete(int id)
         {
             ResultDto response = new ResultDto

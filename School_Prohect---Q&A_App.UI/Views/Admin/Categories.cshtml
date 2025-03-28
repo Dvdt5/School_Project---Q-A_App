@@ -39,7 +39,13 @@
                    class="form-control mb-3"
                    placeholder="Name"
                    id="categoryNameInput" />
-            <div class="row mt-1">
+            <div class="form-check mx-1">
+                <input class="form-check-input" type="checkbox" id="categoryStatusInput">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Active
+                </label>
+            </div>
+            <div class="row mt-3">
                 <button class="btn btn-success mx-3" id="addCategoryBtn">Create</button>
                 <button class="btn btn-warning mx-3" id="updateCategoryBtn">Update</button>
                 <button class="btn btn-danger mx-3" id="deleteCategoryBtn">Delete</button>
@@ -54,6 +60,18 @@
 
 @section Scripts {
     <script>
+        function ClearInputs(){
+            $("#categoryIdInput").val("");
+            $("#categoryNameInput").val("");
+            $("#updateCategoryBtn").hide();
+            $("#deleteCategoryBtn").hide();
+            $("#cancelCategoryBtn").hide();
+            $("#categoryStatusInput").prop('checked', false);
+            $("#addCategoryBtn").fadeIn(1400);
+            $(".categoryRow").removeClass("bg-secondary text-white");
+        }
+
+
         $(document).ready(function(){
             $("#updateCategoryBtn").hide();
             $("#deleteCategoryBtn").hide();
@@ -70,7 +88,7 @@
                         CategoryToTable(d)
                  },
                  error:  function (d) {
-                    console.log(d);
+                    
                     $("#categoryTable tbody").empty();
                     $("#categoryTable tbody").append("<tr><td class='p-3' colspan='5'><div class='alert alert-danger'>Something went wrong.</div></td></tr>");
                  },
@@ -104,6 +122,7 @@
                 var categoryName = $("#categoryNameInput").val();
                 var newCategory = new Object();
                 newCategory.name = categoryName;
+                newCategory.is_Active = $("#categoryStatusInput").is(':checked');
 
                 $.ajax({
                    url: apiBaseUrl + "/Category",
@@ -112,7 +131,7 @@
                    contentType: "application/json",
                    success: function (d) {
                         GetCategoryList();
-                        $("#categoryNameInput").val('');
+                        ClearInputs();
                    },
                    error:  function (d) {
                    var errors = d.responseJSON.errors;
@@ -147,6 +166,7 @@
                    
                    $("#categoryNameInput").val(d.name);
                    $("#categoryNameInput").focus();
+                   $("#categoryStatusInput").prop('checked', d.is_Active);
                },
                error:  function (d) {},
             });
@@ -171,13 +191,9 @@
                        $("#divResult").addClass("alert alert-success m-3 ");
                        $("#divResult").html(d.message);
                        $("#divResult").fadeOut(1000);
-                       $("#categoryIdInput").val("");
-                        $("#categoryNameInput").val("");
-                        $("#updateCategoryBtn").hide();
-                        $("#deleteCategoryBtn").hide();
-                        $("#cancelCategoryBtn").hide();
-                        $("#addCategoryBtn").fadeIn(1400);
-                        $(".categoryRow").removeClass("bg-secondary text-white");
+
+                       ClearInputs();
+                       
                        GetCategoryList();
                    } else {
                        $("#divResult").fadeIn(1000);
@@ -186,7 +202,9 @@
                        $("#divResult").fadeOut(1000);
                    }
                    },
-                   error:  function (d) {},
+                   error:  function (d) {
+                   
+                   },
                 });
                 
             
@@ -198,6 +216,7 @@
                 var categoryName = $("#categoryNameInput").val();
                 var newCategory = new Object();
                 newCategory.name = categoryName;
+                newCategory.is_Active = $("#categoryStatusInput").is(':checked');
                 newCategory.id = $("#categoryIdInput").val();
 
                 $.ajax({
@@ -210,13 +229,7 @@
                        $("#divResult").addClass("alert alert-success m-3 ");
                        $("#divResult").html("Category Updated Successfuly!");
                        $("#divResult").fadeOut(1000);
-                    $("#categoryIdInput").val("");
-                    $("#categoryNameInput").val("");
-                    $("#updateCategoryBtn").hide();
-                    $("#deleteCategoryBtn").hide();
-                    $("#cancelCategoryBtn").hide();
-                    $("#addCategoryBtn").fadeIn(1400);
-                    $(".categoryRow").removeClass("bg-secondary text-white");
+                    ClearInputs();
                     GetCategoryList();
                    },
                    error:  function (d) {
@@ -226,13 +239,7 @@
             });
 
             $("#cancelCategoryBtn").click(function(){
-                $("#categoryIdInput").val("");
-                $("#categoryNameInput").val("");
-                $("#updateCategoryBtn").hide();
-                $("#deleteCategoryBtn").hide();
-                $("#cancelCategoryBtn").hide();
-                $("#addCategoryBtn").fadeIn(1400);
-                $(".categoryRow").removeClass("bg-secondary text-white");
+                ClearInputs();
 
             });
         });
