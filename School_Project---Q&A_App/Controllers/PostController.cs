@@ -36,30 +36,52 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpPost]
-        public async Task<Post> Add(PostDto postDto)
+        public async Task<ResultDto> Add(PostDto postDto)
         {
+            ResultDto response = new ResultDto
+            {
+                Success = true,
+                Message = "Post Created Successfuly!"
+            };
             postDto.Created = DateTime.Now;
             postDto.Updated = DateTime.Now;
+            postDto.Is_Active = true;
+            postDto.UserId = 5;
             var post = _mapper.Map<Post>(postDto);
             await _postRepository.AddAsync(post);
-            return post;
+            return response;
         }
 
         [HttpPut]
-        public async Task<Post> Update(PostDto postDto)
+        public async Task<ResultDto> Update(PostDto postDto)
         {
+            ResultDto response = new ResultDto
+            {
+                Success = true,
+                Message = "Post Updated Successfuly!"
+            };
             postDto.Updated = DateTime.Now;
-            var post = _mapper.Map<Post>(postDto);
+            var post = await _postRepository.GetByIdAsync(postDto.Id);
+            post.Title = postDto.Title;
+            post.Content = postDto.Content;
+            post.Is_Active = postDto.Is_Active;
+            post.CategoryId = postDto.CategoryId;
+
+            
             await _postRepository.UpdateAsync(post);
-            return post;
+            return response;
         }
 
-        [HttpDelete]
-        public async Task<List<Post>> Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<ResultDto> Delete(int id)
         {
+            ResultDto response = new ResultDto
+            {
+                Success = true,
+                Message = "Post Deleted Successfuly!"
+            };
             await _postRepository.DeleteAsync(id);
-            var posts = await _postRepository.GetAllAsync();
-            return posts;
+            return response;
         }
 
     }

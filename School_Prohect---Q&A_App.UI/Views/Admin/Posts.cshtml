@@ -15,7 +15,6 @@
                         <tr>
                             <td>Id</td>
                             <td>Title</td>
-                            <td>Content</td>
                             <td>CategoryId</td>
                             <td>UserId</td>
                             <td>Status</td>
@@ -35,14 +34,22 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
+                <h2 class="mb-3" id="formHeader">Create Category</h2>
+            <input type="hidden" id="postIdInput" />
             <input type="text"
                    class="form-control mb-3"
                    placeholder="Title"
-                   id="titleInput" />
+                   id="postTitleInput" />
             
-            <textarea id="contentInput" placeholder="Content" class="form-control mb-3" style="resize: none;" rows="4"></textarea>
-            <div class="row mt-1">
+            <textarea id="postContentInput" placeholder="Content" class="form-control mb-3" style="resize: none;" rows="4"></textarea>
+            <select class="form-control" id="postCategoryInput">
+            </select>
+
+            <div class="row mt-3">
                 <button class="btn btn-success mx-2" id="addPostBtn">Create</button>
+                <button class="btn btn-warning mx-3" id="updatePostBtn">Update</button>
+                <button class="btn btn-danger mx-3" id="deletePostBtn">Delete</button>
+                <button class="btn btn-primary mx-3" id="cancelPostBtn">Cancel</button>
             </div>
             <div id="divResult" style="display: none;"></div>
         </div>
@@ -53,19 +60,38 @@
 
 @section Scripts {
     <script>
+        function ClearInputs(){
+            $("#postTitleInput").val('');
+            $("#postContentInput").val('');
+            
+            $("#updatePostBtn").hide();
+            $("#deletePostBtn").hide();
+            $("#cancelPostBtn").hide();
+            $("#postStatusInput").prop('checked', false);
+            $("#addPostBtn").fadeIn(1400);
+            $(".postRow").removeClass("bg-secondary text-white");
+        }
+
+
         $(document).ready(function(){
             var apiBaseUrl="@ViewBag.ApiBaseURL";
             GetPostList();
+            GetCategoryList();
+            $("#updatePostBtn").hide();
+            $("#deletePostBtn").hide();
+            $("#cancelPostBtn").hide();
 
             function GetPostList(){
                 $.ajax({
                  url: apiBaseUrl + "/Post",
                  type: "GET",
                  success: function (d) {
-                        PostToTable(d)
+                        PostToTable(d);
+                        $("#formHeader").html("Create Post");
                  },
                  error:  function (d) {
                     $("#postTable tbody").empty();
+                    $("#postTable tbody").append("<tr><td class='p-3' colspan='7'><div class='alert alert-danger'>Something went wrong.</div></td></tr>");
                  },
                 });
             }
@@ -74,10 +100,10 @@
                 $("#postTable tbody").empty();
                 var row="";
                 $.each(data,function(i,item){
-                    row+= "<tr>";
+                    row+= `<tr class="postRow" data-id="${item.id}">`;
                     row+= "<td>" + item.id + "</td>";
                     row+= "<td>" + item.title + "</td>";
-                    row+= "<td>" + item.content + "</td>";
+                    
                     row+= "<td>" + item.categoryId + "</td>";
 					row+= "<td>" + item.userId + "</td>";
                     if (item.is_Active){
@@ -91,28 +117,56 @@
                     row+= "<td>" + FormatDate(item.updated) + "</td>";
                     row+= "</tr>";
                 });
+                if (data.length === 0){
+                    $("#postTable tbody").empty();
+                    $("#postTable tbody").append("<tr><td class='p-3' colspan='7'><div class='alert alert-warning'>There is no record.</div></td></tr>");
+                } else {
+
                 $("#postTable tbody").append(row);
+                }
 
             }
 
+            function GetCategoryList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Category",
+                 type: "GET",
+                 success: function (d) {
+                        CategoryToForm(d)
+                 },
+                 error:  function (d) {},
+                });
+            }
+
+            function CategoryToForm(data){
+                $("#postCategoryInput").empty();
+                var row="";
+                $.each(data, function(i, item){
+                    row += `<option value="${item.id}">${item.name}</option>`;
+                });
+                $("#postCategoryInput").append(row);
+            }
+
             $("#addPostBtn").click(function(){
-                var title = $("#titleInput").val();
-                var content = $("#contentInput").val();
+                var title = $("#postTitleInput").val();
+                var content = $("#postContentInput").val();
+                var categoryId = $("#postCategoryInput").find(":selected").val();
                 var newPost = new Object();
                 newPost.title = title;
                 newPost.content = content;
+                newPost.categoryId = categoryId;
 
                 $.ajax({
-                   url: apiBaseUrl + "/User",
+                   url: apiBaseUrl + "/Post",
                    type: "POST",
                    data: JSON.stringify(newPost),
                    contentType: "application/json",
                    success: function (d) {
                         GetPostList();
-                        $("#titleInput").val('');
-                        $("#contentInput").val('');
+                        ClearInputs();
                    },
                    error:  function (d) {
+                   
                    var errors = d.responseJSON.errors;
 
                    $("#divResult").fadeIn(1000);
@@ -124,7 +178,116 @@
                 });
             });
 
+            $(document).on("click",".postRow",function(){
+            var id = $(this).attr("data-id");
 
+
+            $(".postRow").removeClass("bg-secondary text-white");
+            $(this).addClass("bg-secondary text-white");
+            $("#divResult").hide();
+            $("#updatePostBtn").hide();
+            $("#deletePostBtn").hide();
+            $("#cancelPostBtn").hide();
+            $("#addPostBtn").hide();
+
+
+            $.ajax({
+               url: apiBaseUrl + "/Post/"+ id,
+               type: "GET",
+               contentType: "application/json",
+               success: function (d) {
+                   $("#formHeader").html("Update Post");
+                   $("#postIdInput").val(id);
+
+                   $("#postTitleInput").val(d.title);
+                   $("#postContentInput").val(d.content);
+                   $("#postTitleInput").focus();
+                   $("#postCategoryInput").val(d.categoryId);
+                   $("#postStatusInput").prop('checked', d.is_Active);
+               },
+               error:  function (d) {},
+            });
+
+            $("#updatePostBtn").fadeIn(1000);
+            $("#deletePostBtn").fadeIn(1000);
+            $("#cancelPostBtn").fadeIn(1000);
+
+            });
+
+            $("#deletePostBtn").click(function(){
+                var id = $("#postIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/Post/"+ id,
+                   type: "DELETE",
+                   contentType: "application/json",
+                   success: function (d) {
+                       
+                    if (d.success) {
+                      
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+
+                       ClearInputs();
+
+                       GetPostList();
+                   } else {
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-danger m-3 ");
+                       $("#divResult").html("Something went wrong!");
+                       $("#divResult").fadeOut(1000);
+                   }
+                   },
+                   error:  function (d) {
+                       
+                   },
+                });
+            });
+
+            $("#updatePostBtn").click(function(){
+                $("#divResult").hide();
+                var title = $("#postTitleInput").val();
+                var content = $("#postContentInput").val();
+                var categoryId = $("#postCategoryInput").find(":selected").val();
+                var newPost = new Object();
+                newPost.title = title;
+                newPost.content = content;
+                newPost.categoryId = categoryId;
+                newPost.id = $("#postIdInput").val();
+                
+
+                $.ajax({
+                   url: apiBaseUrl + "/Post",
+                   type: "PUT",
+                   data: JSON.stringify(newPost),
+                   contentType: "application/json",
+                   success: function (d) {
+                   $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html("Post Updated Successfuly!");
+                       $("#divResult").fadeOut(1000);
+                    ClearInputs();
+                    GetPostList();
+                   },
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
+                });
+            });
+
+            $("#cancelPostBtn").click(function(){
+                ClearInputs();
+                GetPostList();
+                $("#divResult").hide();
+
+            });
         });
 
 

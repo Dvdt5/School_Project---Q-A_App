@@ -33,7 +33,7 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
-            
+            <h2 class="mb-3" id="formHeader">Create Category</h2>
             <input type="hidden" id="categoryIdInput"/>
             <input type="text"
                    class="form-control mb-3"
@@ -63,6 +63,7 @@
         function ClearInputs(){
             $("#categoryIdInput").val("");
             $("#categoryNameInput").val("");
+            $("#divResult").hide();
             $("#updateCategoryBtn").hide();
             $("#deleteCategoryBtn").hide();
             $("#cancelCategoryBtn").hide();
@@ -85,7 +86,8 @@
                  url: apiBaseUrl + "/Category",
                  type: "GET",
                  success: function (d) {
-                        CategoryToTable(d)
+                        CategoryToTable(d);
+                        $("#formHeader").html("Create Category");
                  },
                  error:  function (d) {
                     
@@ -113,7 +115,13 @@
                     row+= "<td>" + FormatDate(item.updated) + "</td>";
                     row+= "</tr>";
                 });
+                if (data.length === 0){
+                    $("#categoryTable tbody").empty();
+                    $("#categoryTable tbody").append("<tr><td class='p-3' colspan='5'><div class='alert alert-warning'>There is no record.</div></td></tr>");
+                } else {
+
                 $("#categoryTable tbody").append(row);
+                }
 
             }
 
@@ -149,8 +157,10 @@
             $(document).on("click",".categoryRow",function(){
             var id = $(this).attr("data-id");
             
+            
             $(".categoryRow").removeClass("bg-secondary text-white");
             $(this).addClass("bg-secondary text-white");
+            $("#divResult").hide();
             $("#updateCategoryBtn").hide();
             $("#deleteCategoryBtn").hide();
             $("#cancelCategoryBtn").hide();
@@ -162,6 +172,7 @@
                type: "GET",
                contentType: "application/json",
                success: function (d) {
+                   $("#formHeader").html("Update Category");
                    $("#categoryIdInput").val(id);
                    
                    $("#categoryNameInput").val(d.name);
@@ -233,14 +244,19 @@
                     GetCategoryList();
                    },
                    error:  function (d) {
-                   console.log(d);
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
                    },
                 });
             });
 
             $("#cancelCategoryBtn").click(function(){
                 ClearInputs();
-
+                GetCategoryList();
             });
         });
 
