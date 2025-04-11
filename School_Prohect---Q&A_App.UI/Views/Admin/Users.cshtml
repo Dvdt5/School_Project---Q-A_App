@@ -48,6 +48,10 @@
                 class="form-control mb-3"
                 placeholder="Password" 
                 id="passwordInput" />
+            <input type="password"
+                class="form-control mb-3"
+                placeholder="Password Confirm"
+                id="passwordConfirmInput" />
             <div class="row mt-1">
                 <button class="btn btn-success mx-2" id="addUserBtn">Create</button>
             </div>
@@ -104,10 +108,12 @@ $(document).ready(function(){
         var userName = $("#userNameInput").val();
         var email = $("#emailInput").val();
         var password = $("#passwordInput").val();
+	    var passwordConfirm = $("#passwordConfirmInput").val();
         var newUser = new Object();
         newUser.userName = userName;
         newUser.email = email;
         newUser.password = password;
+		newUser.passwordConfirm = passwordConfirm;
 
         $.ajax({
            url: apiBaseUrl + "/User",
@@ -121,6 +127,7 @@ $(document).ready(function(){
                 $("#passwordInput").val('');
            },
            error:  function (d) {
+
            var errors = d.responseJSON.errors;
            $("#divResult").fadeIn(1000);
            $("#divResult").addClass("alert alert-danger m-3 ");

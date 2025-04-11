@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using School_Project___Q_A_App.DTOs;
 using School_Project___Q_A_App.Models;
@@ -8,6 +9,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("Category")]
     [ApiController]
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly CategoryRepository _categoryRepository;

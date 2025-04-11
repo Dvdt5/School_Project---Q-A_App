@@ -8,7 +8,9 @@ namespace School_Project___Q_A_App.Mapping
     {
         public MapProfile()
         {
-            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<AppUser, LoginDto>().ReverseMap();
+            CreateMap<AppUser, UserDto>().ReverseMap();
+            CreateMap<AppUser, RegisterDto>().ReverseMap();
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
 

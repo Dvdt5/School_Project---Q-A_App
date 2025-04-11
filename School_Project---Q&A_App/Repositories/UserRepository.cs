@@ -2,7 +2,7 @@
 
 namespace School_Project___Q_A_App.Repositories
 {
-    public class UserRepository : GenericRepository<User>
+    public class UserRepository : GenericRepository<AppUser>
     {
         public UserRepository(AppDbContext context) : base(context)
         {
