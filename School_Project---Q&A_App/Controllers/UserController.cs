@@ -111,7 +111,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpDelete]
-        public async Task<ResultDto> Delete (int id)
+        public async Task<ResultDto> Delete (string id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
             await _userManager.DeleteAsync(user);
