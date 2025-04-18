@@ -81,7 +81,6 @@ function ClearInputs(){
             $("#userEmailInput").val('');
             $("#userPasswordInput").val('');
             $("#userPasswordConfirmInput").val('');
-            $("#divResult").hide();
             $("#updateUserBtn").hide();
             $("#deleteUserBtn").hide();
             $("#cancelUserBtn").hide();
@@ -134,6 +133,7 @@ $(document).ready(function(){
     }
 
     $("#addUserBtn").click(function(){
+        $("#divResult").hide();
         var userName = $("#userNameInput").val();
         var email = $("#userEmailInput").val();
         var password = $("#userPasswordInput").val();
@@ -199,8 +199,89 @@ $(document).ready(function(){
                },
                error:  function (d) {},
             });
-        
-    
+        $("#updateUserBtn").fadeIn(1000);
+        $("#deleteUserBtn").fadeIn(1000);
+        $("#cancelUserBtn").fadeIn(1000);
+    });
+
+    $("#deleteUserBtn").click(function(){
+                var id = $("#userIdInput").val();
+                $("#divResult").hide();
+                $.ajax({
+                   url: apiBaseUrl + "/User/"+ id,
+                   type: "DELETE",
+                   headers: {
+                    "Authorization": "Bearer " + token
+                    },
+                   contentType: "application/json",
+                   success: function (d) {
+                    if (d.success) {
+                       
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+
+                       ClearInputs();
+                       
+                       GetUserList();
+                   } else {
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-danger m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+                   }
+                   },
+                   error:  function (d) {
+                   
+                   },
+                });
+                
+            
+            });
+            $("#updateUserBtn").click(function(){
+                $("#divResult").hide();
+                
+                var userName = $("#userNameInput").val();
+                var newUser = new Object();
+                newUser.name = userName;
+                newUser.email = $("#userEmailInput").val();
+                newUser.password = $("#userPasswordInput").val();
+                newUser.passwordConfirm = $("#userPasswordConfirmInput").val();
+                newUser.is_Active = $("#userStatusInput").is(':checked');
+                newUser.id = $("#userIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/User",
+                   type: "PUT",
+                   headers: {
+                    "Authorization": "Bearer " + token
+                    },
+                   data: JSON.stringify(newUser),
+                   contentType: "application/json",
+                   success: function (d) {
+                   $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html("User Updated Successfuly!");
+                       $("#divResult").fadeOut(1000);
+                    ClearInputs();
+                    GetUserList();
+                   },
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
+                });
+            });
+            $("#cancelUserBtn").click(function(){
+                $("#divResult").hide();
+                ClearInputs();
+                GetUserList();
+            });
 });
 
 

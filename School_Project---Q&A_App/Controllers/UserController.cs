@@ -107,6 +107,10 @@ namespace School_Project___Q_A_App.Controllers
 
             user.UserName = userDto.UserName;
             user.Email = userDto.Email;
+            if (userDto.Password != null)
+            {
+                user.Password = userDto.Password;
+            }
             user.Is_Active = userDto.Is_Active;
             user.Updated = DateTime.Now;
 
