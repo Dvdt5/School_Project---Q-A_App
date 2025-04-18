@@ -72,6 +72,9 @@ $(document).ready(function(){
         $.ajax({
          url: apiBaseUrl + "/User",
          type: "GET",
+         headers: {
+           "Authorization": "Bearer " + token
+         },
          success: function (d) {
                 UserToTable(d)
          },
@@ -118,6 +121,9 @@ $(document).ready(function(){
         $.ajax({
            url: apiBaseUrl + "/User",
            type: "POST",
+           headers: {
+           "Authorization": "Bearer " + token
+            },
            data: JSON.stringify(newUser),
            contentType: "application/json",
            success: function (d) {
