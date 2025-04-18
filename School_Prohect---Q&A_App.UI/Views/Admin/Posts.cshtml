@@ -24,7 +24,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td></td>
+                            <td colspan="5"><p>Loading...</p></td>
                         </tr>
                     </tbody>
                 </table>
@@ -34,7 +34,7 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
-                <h2 class="mb-3" id="formHeader">Create Category</h2>
+                <h2 class="mb-3" id="formHeader">Create Post</h2>
             <input type="hidden" id="postIdInput" />
             <input type="text"
                    class="form-control mb-3"
@@ -44,6 +44,13 @@
             <textarea id="postContentInput" placeholder="Content" class="form-control mb-3" style="resize: none;" rows="4"></textarea>
             <select class="form-control" id="postCategoryInput">
             </select>
+
+            <div class="form-check mx-1">
+                <input class="form-check-input" type="checkbox" id="postStatusInput">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Active
+                </label>
+            </div>
 
             <div class="row mt-3">
                 <button class="btn btn-success mx-2" id="addPostBtn">Create</button>
@@ -63,7 +70,6 @@
         function ClearInputs(){
             $("#postTitleInput").val('');
             $("#postContentInput").val('');
-            
             $("#updatePostBtn").hide();
             $("#deletePostBtn").hide();
             $("#cancelPostBtn").hide();

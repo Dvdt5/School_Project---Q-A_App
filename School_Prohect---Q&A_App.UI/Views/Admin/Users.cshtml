@@ -24,7 +24,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td></td>
+                        <td colspan="5"><p>Loading...</p></td>
                     </tr>
                 </tbody>
             </table>
@@ -34,6 +34,8 @@
         <div class="col col-md-5">
 
         <div class=" card card-body">
+                <h2 class="mb-3" id="formHeader">Create User</h2>
+            <input type="hidden" id="userIdInput" />
             <input type="text"
 				   class="form-control mb-3"
 				   placeholder="UserName"
@@ -42,18 +44,27 @@
                 type="text"
                 class="form-control mb-3"
 				placeholder="Email"
-                id="emailInput" />
+                id="userEmailInput" />
 			<input 
                 type="password"
                 class="form-control mb-3"
                 placeholder="Password" 
-                id="passwordInput" />
+                id="userPasswordInput" />
             <input type="password"
                 class="form-control mb-3"
                 placeholder="Password Confirm"
-                id="passwordConfirmInput" />
+                id="userPasswordConfirmInput" />
+            <div class="form-check mx-1">
+                <input class="form-check-input" type="checkbox" id="userStatusInput">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Active
+                </label>
+            </div>
             <div class="row mt-1">
                 <button class="btn btn-success mx-2" id="addUserBtn">Create</button>
+                <button class="btn btn-warning mx-3" id="updateUserBtn">Update</button>
+                <button class="btn btn-danger mx-3" id="deleteUserBtn">Delete</button>
+                <button class="btn btn-primary mx-3" id="cancelUserBtn">Cancel</button>
             </div>
             <div id="divResult" style="display: none;"></div>
         </div>
@@ -64,6 +75,20 @@
 
 @section Scripts{
 <script>
+function ClearInputs(){
+			$("#userIdInput").val('');
+            $("#userNameInput").val('');
+            $("#userEmailInput").val('');
+            $("#userPasswordInput").val('');
+            $("#userPasswordConfirmInput").val('');
+            $("#divResult").hide();
+            $("#updateUserBtn").hide();
+            $("#deleteUserBtn").hide();
+            $("#cancelUserBtn").hide();
+            $("#userStatusInput").prop('checked', false);
+            $("#addUserBtn").fadeIn(1400);
+            $(".userRow").removeClass("bg-secondary text-white");
+ }
 $(document).ready(function(){
     var apiBaseUrl="@ViewBag.ApiBaseURL";
     GetUserList();
@@ -77,6 +102,7 @@ $(document).ready(function(){
          },
          success: function (d) {
                 UserToTable(d)
+                $("#formHeader").html("Create User");
          },
          error:  function (d) {
             $("#userTable tbody").empty();
@@ -88,7 +114,7 @@ $(document).ready(function(){
         $("#userTable tbody").empty();
         var row="";
         $.each(data,function(i,item){
-            row+= "<tr>";
+            row += `<tr class="userRow" data-id="${item.id}">`;
             row+= "<td>" + item.id + "</td>";
 			row+= "<td>" + item.userName + "</td>";
 			row+= "<td>" + item.email + "</td>";
@@ -109,14 +135,16 @@ $(document).ready(function(){
 
     $("#addUserBtn").click(function(){
         var userName = $("#userNameInput").val();
-        var email = $("#emailInput").val();
-        var password = $("#passwordInput").val();
-	    var passwordConfirm = $("#passwordConfirmInput").val();
+        var email = $("#userEmailInput").val();
+        var password = $("#userPasswordInput").val();
+	    var passwordConfirm = $("#userPasswordConfirmInput").val();
+        var is_Active = $("#userStatusInput").is(':checked');
         var newUser = new Object();
         newUser.userName = userName;
         newUser.email = email;
         newUser.password = password;
 		newUser.passwordConfirm = passwordConfirm;
+        newUser.is_Active = is_Active;
 
         $.ajax({
            url: apiBaseUrl + "/User",
@@ -128,9 +156,7 @@ $(document).ready(function(){
            contentType: "application/json",
            success: function (d) {
                 GetUserList();
-                $("#userNameInput").val('');
-                $("#emailInput").val('');
-                $("#passwordInput").val('');
+                ClearInputs();
            },
            error:  function (d) {
 
@@ -142,6 +168,37 @@ $(document).ready(function(){
 
         });
     });
+    $(document).on("click",".userRow",function(){
+            var id = $(this).attr("data-id");
+            
+            
+            $(".userRow").removeClass("bg-secondary text-white");
+            $(this).addClass("bg-secondary text-white");
+            $("#divResult").hide();
+            $("#updateUserBtn").hide();
+            $("#deleteUserBtn").hide();
+            $("#cancelUserBtn").hide();
+            $("#addUserBtn").hide();
+            
+
+            $.ajax({
+               url: apiBaseUrl + "/User/"+ id,
+               type: "GET",
+               headers: {
+                "Authorization": "Bearer " + token
+                },
+               contentType: "application/json",
+               success: function (d) {
+                   $("#formHeader").html("Update User");
+                   $("#userIdInput").val(id);
+                   
+                   $("#userNameInput").val(d.name);
+                   $("#userEmailInput").val(d.name);
+                   $("#userNameInput").focus();
+                   $("#userStatusInput").prop('checked', d.is_Active);
+               },
+               error:  function (d) {},
+            });
         
     
 });
