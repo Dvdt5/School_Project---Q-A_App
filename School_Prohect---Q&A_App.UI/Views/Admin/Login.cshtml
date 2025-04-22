@@ -45,10 +45,10 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user">
+                                    <div class="user">
                                         <div class="form-group">
                                             <input type="email" class="form-control form-control-user"
-                                                   id="exampleInputEmail" aria-describedby="nameHelp"
+                                                   id="exampleInputName" aria-describedby="nameHelp"
                                                    placeholder="Enter UserName...">
                                         </div>
                                         <div class="form-group">
@@ -56,10 +56,10 @@
                                                    id="exampleInputPassword" placeholder="Password">
                                         </div>
                                         
-                                        <a  class="btn btn-primary btn-user btn-block">
+                                        <button id="loginBtn" class="btn btn-primary btn-user btn-block">
                                             Login
-                                        </a>
-                                    </form>
+                                        </button>
+                                    </div>
                                     <hr>
                                     
                                     <div class="text-center">
@@ -86,6 +86,36 @@
 
     <!-- Custom scripts for all pages-->
     <script src="~/sbadmin2/js/sb-admin-2.min.js"></script>
+
+    <script>
+		$(document).ready(function () {
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+
+			$('#loginBtn').click(function () {
+				// Get the values from the input fields
+				var username = $('#exampleInputName').val();
+				var password = $('#exampleInputPassword').val();
+				var loginUser = new Object;
+				loginUser.userName = username; 
+				loginUser.password = password;
+				
+
+				$.ajax({
+                url: apiBaseUrl + "/User/SignIn",
+                 type: "POST",
+                 data: JSON.stringify(loginUser),
+                 contentType: "application/json",
+                 success: function (d) {
+				   localStorage.setItem("token", d.token);
+                    location.href="/Admin";
+                 },
+                error:  function (d) {
+                    
+                },
+                });
+			});
+		});
+    </script>
 
 </body>
 

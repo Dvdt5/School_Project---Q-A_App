@@ -16,7 +16,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
@@ -135,13 +135,13 @@ namespace School_Project___Q_A_App.Controllers
 
         [HttpPost("SignIn")]
         [AllowAnonymous]
-        public async Task<ResultDto> SignIn(LoginDto dto)
+        public async Task<LoginResponseDto> SignIn(LoginDto dto)
         {
             var user = await _userManager.FindByNameAsync(dto.UserName);
 
             if (user is null)
             {
-                var response = new ResultDto
+                var response = new LoginResponseDto
                 {
                     Success = false,
                     Message = "This User Doesnt Exit!",
@@ -152,7 +152,7 @@ namespace School_Project___Q_A_App.Controllers
 
             if (!isPasswordCorrect)
             {
-                var response = new ResultDto
+                var response = new LoginResponseDto
                 {
                     Success = false,
                     Message = "Username or Password is wrong!",
@@ -177,10 +177,11 @@ namespace School_Project___Q_A_App.Controllers
 
             var token = GenerateJWT(authClaims);
 
-            var responseDone = new ResultDto
+            var responseDone = new LoginResponseDto
             {
                 Success = true,
                 Message = "Login Successfull!",
+                Token = token,
             };
             return responseDone;
         }

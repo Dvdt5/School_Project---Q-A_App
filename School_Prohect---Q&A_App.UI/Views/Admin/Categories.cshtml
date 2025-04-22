@@ -80,14 +80,14 @@
 
             var apiBaseUrl="@ViewBag.ApiBaseURL";
             GetCategoryList();
-
             function GetCategoryList(){
                 $.ajax({
                  url: apiBaseUrl + "/Category",
                  type: "GET",
                  headers: {
-                  "Authorization": "Bearer " + token
+                    "Authorization": "Bearer " + token
                  },
+                 
                  success: function (d) {
                         CategoryToTable(d);
                         $("#formHeader").html("Create Category");
