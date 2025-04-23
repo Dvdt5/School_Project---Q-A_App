@@ -106,7 +106,7 @@
                  data: JSON.stringify(loginUser),
                  contentType: "application/json",
                  success: function (d) {
-				   localStorage.setItem("token", d.token);
+                   sessionStorage.setItem("token", d.token);
                     location.href="/Admin";
                  },
                 error:  function (d) {
