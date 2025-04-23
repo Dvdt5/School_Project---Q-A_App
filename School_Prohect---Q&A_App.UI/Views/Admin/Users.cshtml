@@ -14,7 +14,6 @@
             <table id="userTable" class="col-12 table table-hover table-bordered m-0">
                 <thead>
                     <tr>
-                        <td>Id</td>
                         <td>UserName</td>
                         <td>Email</td>
                         <td>Status</td>
@@ -39,21 +38,25 @@
             <input type="text"
 				   class="form-control mb-3"
 				   placeholder="UserName"
-				   id="userNameInput" />
+				   id="userNameInput"
+                       autocomplete="off" />
             <input 
                 type="text"
                 class="form-control mb-3"
 				placeholder="Email"
-                id="userEmailInput" />
+                id="userEmailInput" 
+                autocomplete="off"/>
 			<input 
                 type="password"
                 class="form-control mb-3"
                 placeholder="Password" 
-                id="userPasswordInput" />
+                id="userPasswordInput"
+                autocomplete="off"/>
             <input type="password"
                 class="form-control mb-3"
                 placeholder="Password Confirm"
-                id="userPasswordConfirmInput" />
+                id="userPasswordConfirmInput"
+                autocomplete="off"/>
             <div class="form-check mx-1">
                 <input class="form-check-input" type="checkbox" id="userStatusInput">
                 <label class="form-check-label" for="flexCheckDefault">
@@ -91,6 +94,7 @@ function ClearInputs(){
 $(document).ready(function(){
     var apiBaseUrl="@ViewBag.ApiBaseURL";
     GetUserList();
+    ClearInputs();
 
     function GetUserList(){
         $.ajax({
@@ -114,7 +118,7 @@ $(document).ready(function(){
         var row="";
         $.each(data,function(i,item){
             row += `<tr class="userRow" data-id="${item.id}">`;
-            row+= "<td>" + item.id + "</td>";
+            
 			row+= "<td>" + item.userName + "</td>";
 			row+= "<td>" + item.email + "</td>";
             if (item.is_Active){
@@ -192,8 +196,8 @@ $(document).ready(function(){
                    $("#formHeader").html("Update User");
                    $("#userIdInput").val(id);
                    
-                   $("#userNameInput").val(d.name);
-                   $("#userEmailInput").val(d.name);
+                   $("#userNameInput").val(d.userName);
+                   $("#userEmailInput").val(d.email);
                    $("#userNameInput").focus();
                    $("#userStatusInput").prop('checked', d.is_Active);
                },
@@ -206,6 +210,7 @@ $(document).ready(function(){
 
     $("#deleteUserBtn").click(function(){
                 var id = $("#userIdInput").val();
+                
                 $("#divResult").hide();
                 $.ajax({
                    url: apiBaseUrl + "/User/"+ id,
@@ -233,18 +238,17 @@ $(document).ready(function(){
                    }
                    },
                    error:  function (d) {
-                   
+                    console.log(d)
                    },
                 });
-                
-            
-            });
+    });
+
             $("#updateUserBtn").click(function(){
                 $("#divResult").hide();
                 
-                var userName = $("#userNameInput").val();
+                
                 var newUser = new Object();
-                newUser.name = userName;
+                newUser.userName = $("#userNameInput").val();
                 newUser.email = $("#userEmailInput").val();
                 newUser.password = $("#userPasswordInput").val();
                 newUser.passwordConfirm = $("#userPasswordConfirmInput").val();

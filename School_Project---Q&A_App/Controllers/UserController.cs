@@ -44,10 +44,10 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet("{id}")]
-        public LoginDto GetById(string id)
+        public UserDto GetById(string id)
         {
             var user = _userManager.Users.Where(s => s.Id == id).SingleOrDefault();
-            var userDto = _mapper.Map<LoginDto>(user);
+            var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
 
@@ -118,7 +118,7 @@ namespace School_Project___Q_A_App.Controllers
             return response;
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ResultDto> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
