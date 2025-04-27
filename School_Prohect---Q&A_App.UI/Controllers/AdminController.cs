@@ -42,6 +42,14 @@ namespace School_Prohect___Q_A_App.UI.Controllers
             return View();
         }
 
+        [Route("Comments")]
+        public IActionResult Comments(int id)
+        {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
+            return View();
+        }
+
         [Route("Login")]
         public IActionResult Login()
         {

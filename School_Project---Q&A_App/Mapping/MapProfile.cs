@@ -13,6 +13,7 @@ namespace School_Project___Q_A_App.Mapping
             CreateMap<AppUser, RegisterDto>().ReverseMap();
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Comment, CommentDto>();
 
         }
     }

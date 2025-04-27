@@ -1,0 +1,231 @@
+﻿
+@{
+    ViewData["Title"] = "Comments";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Comments</h1>
+
+<div class="col-12 container">
+    <div class="row justify-content-between">
+        <div class="col col-md-7">
+            <div class=" card card-body p-0">
+                <table id="commentTable" class="col-12 table table-hover table-bordered m-0">
+                    <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>UserId</td>
+                            <td>PostId</td>
+                            <td>Content</td>
+                            <td>Created</td>
+                            <td>Updated</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6"><p>Loading...</p></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="col col-md-5">
+
+            <div class=" card card-body">
+                <h2 class="mb-3" id="formHeader">Update Comment</h2>
+                <input type="hidden" id="commentIdInput" />
+				<label for="commentContentInput">Comment Content</label>
+                <textarea id="commentContentInput" placeholder="Content" class="form-control mb-3" style="resize: none;" rows="4"></textarea>
+                <div class="row mt-3">
+                    <button class="btn btn-warning mx-3" id="updateCommentBtn">Update</button>
+                    <button class="btn btn-danger mx-3" id="deleteCommentBtn">Delete</button>
+                    <button class="btn btn-primary mx-3" id="cancelCommentBtn">Cancel</button>
+                </div>
+                <div id="divResult" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function ClearInputs(){
+            $("#commentIdInput").val("");
+            $("#commentContentInput").val("");
+            $("#divResult").hide();
+            $("#updateCommentBtn").hide();
+            $("#deleteCommentBtn").hide();
+            $("#cancelCommentBtn").hide();
+            $(".commentRow").removeClass("bg-secondary text-white");
+        }
+
+
+        $(document).ready(function(){
+            $("#updateCommentBtn").hide();
+            $("#deleteCommentBtn").hide();
+            $("#cancelCommentBtn").hide();
+
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+            GetCommentList();
+            function GetCommentList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Comment",
+                 type: "GET",
+                 headers: {
+                    "Authorization": "Bearer " + token
+                 },
+
+                 success: function (d) {
+                        CommentToTable(d);
+                        
+                 },
+                 error:  function (d) {
+
+                    $("#commentTable tbody").empty();
+                    $("#commentTable tbody").append("<tr><td class='p-3' colspan='6'><div class='alert alert-danger'>Something went wrong.</div></td></tr>");
+                 },
+                });
+            }
+
+            function CommentToTable(data){
+                $("#commentTable tbody").empty();
+                var row="";
+                $.each(data,function(i,item){
+                    row += `<tr class="commentRow" data-id="${item.id}">`;
+                    row += "<td>" + item.id + "</td>";
+                    row+= "<td>" + item.userId + "</td>";
+                    row+= "<td>" + item.postId + "</td>";
+                    row+= "<td>" + item.content + "</td>";
+                    row+= "<td>" + FormatDate(item.created) + "</td>";
+                    row+= "<td>" + FormatDate(item.updated) + "</td>";
+                    row+= "</tr>";
+                });
+                if (data.length === 0){
+                    $("#commentTable tbody").empty();
+                    $("#commentTable tbody").append("<tr><td class='p-3' colspan='6'><div class='alert alert-warning'>There is no record.</div></td></tr>");
+                } else {
+
+                $("#commentTable tbody").append(row);
+                }
+
+            }
+
+            $(document).on("click",".commentRow",function(){
+            var id = $(this).attr("data-id");
+
+
+            $(".commentRow").removeClass("bg-secondary text-white");
+            $(this).addClass("bg-secondary text-white");
+            $("#divResult").hide();
+            $("#updateCommentBtn").hide();
+            $("#deleteCommentBtn").hide();
+            $("#cancelCommentBtn").hide();
+            $("#addCommentBtn").hide();
+
+
+            $.ajax({
+               url: apiBaseUrl + "/Comment/"+ id,
+               type: "GET",
+               headers: {
+                "Authorization": "Bearer " + token
+                },
+               contentType: "application/json",
+               success: function (d) {
+                   
+                   $("#commentIdInput").val(id);
+
+                   $("#commentContentInput").val(d.content);
+                   $("#commentContentInput").focus();
+                   
+               },
+               error:  function (d) {},
+            });
+
+            $("#updateCommentBtn").fadeIn(1000);
+            $("#deleteCommentBtn").fadeIn(1000);
+            $("#cancelCommentBtn").fadeIn(1000);
+
+            });
+
+            $("#deleteCommentBtn").click(function(){
+                var id = $("#commentIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/Comment/"+ id,
+                   type: "DELETE",
+                   headers: {
+                    "Authorization": "Bearer " + token
+                    },
+                   contentType: "application/json",
+                   success: function (d) {
+                    if (d.success) {
+
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+
+                       ClearInputs();
+
+                       GetCommentList();
+                   } else {
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-danger m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+                   }
+                   },
+                   error:  function (d) {
+
+                   },
+                });
+
+
+            });
+
+            $("#updateCommentBtn").click(function(){
+                $("#divResult").hide();
+
+                var commentContent = $("#commentContentInput").val();
+                var newComment = new Object();
+                newComment.content = commentContent;
+                newComment.id = $("#commentIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/Comment",
+                   type: "PUT",
+                   headers: {
+                    "Authorization": "Bearer " + token
+                    },
+                   data: JSON.stringify(newComment),
+                   contentType: "application/json",
+                   success: function (d) {
+                   $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html("Comment Updated Successfuly!");
+                       $("#divResult").fadeOut(1000);
+                    ClearInputs();
+                    GetCommentList();
+                   },
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
+                });
+            });
+
+            $("#cancelCommentBtn").click(function(){
+                ClearInputs();
+                GetCommentList();
+            });
+        });
+
+
+    </script>
+}

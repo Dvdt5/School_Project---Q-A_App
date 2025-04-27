@@ -91,6 +91,7 @@ builder.Services.AddScoped(typeof(GenericRepository<>));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<CategoryRepository>();
+builder.Services.AddScoped<CommentRepository>();
 
 // Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
