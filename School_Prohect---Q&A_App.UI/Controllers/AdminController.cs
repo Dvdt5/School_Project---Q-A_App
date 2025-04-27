@@ -15,6 +15,8 @@ namespace School_Prohect___Q_A_App.UI.Controllers
 
         public IActionResult Index()
         {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
             return View();
         }
 
