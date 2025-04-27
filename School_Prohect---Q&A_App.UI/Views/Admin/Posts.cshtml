@@ -164,10 +164,15 @@
                 var title = $("#postTitleInput").val();
                 var content = $("#postContentInput").val();
                 var categoryId = $("#postCategoryInput").find(":selected").val();
+                var is_Active = $("#postStatusInput").is(':checked');
+                var userId = user.id;
+                
                 var newPost = new Object();
                 newPost.title = title;
                 newPost.content = content;
                 newPost.categoryId = categoryId;
+                newPost.userId = userId;
+                newPost.is_Active = is_Active;
 
                 $.ajax({
                    url: apiBaseUrl + "/Post",
@@ -273,12 +278,13 @@
                 var title = $("#postTitleInput").val();
                 var content = $("#postContentInput").val();
                 var categoryId = $("#postCategoryInput").find(":selected").val();
+                var is_Active = $("#postStatusInput").is(':checked');
                 var newPost = new Object();
                 newPost.title = title;
                 newPost.content = content;
                 newPost.categoryId = categoryId;
                 newPost.id = $("#postIdInput").val();
-                
+                newPost.is_Active = is_Active;
 
                 $.ajax({
                    url: apiBaseUrl + "/Post",

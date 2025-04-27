@@ -58,7 +58,7 @@ namespace School_Project___Q_A_App.Controllers
             userAdd.UserName = userDto.UserName;
             userAdd.Created = DateTime.Now;
             userAdd.Updated = DateTime.Now;
-            userAdd.Is_Active = false;
+            userAdd.Is_Active = userDto.Is_Active;
 
             var identityResult = await _userManager.CreateAsync(userAdd, userAdd.Password);
 

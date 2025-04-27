@@ -232,8 +232,9 @@
 		$("#sessionUserName").html(user.username);
            
 		});
-        var token=sessionStorage.getItem("token");
+        var token = sessionStorage.getItem("token");
         var user = GetUserFromToken(token);
+        
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

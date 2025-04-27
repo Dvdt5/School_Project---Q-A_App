@@ -47,8 +47,7 @@ namespace School_Project___Q_A_App.Controllers
             };
             postDto.Created = DateTime.Now;
             postDto.Updated = DateTime.Now;
-            postDto.Is_Active = true;
-            postDto.UserId = 5;
+           
             var post = _mapper.Map<Post>(postDto);
             await _postRepository.AddAsync(post);
             return response;

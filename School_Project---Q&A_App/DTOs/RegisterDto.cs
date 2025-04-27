@@ -20,5 +20,7 @@ namespace School_Project___Q_A_App.DTOs
         [Required(ErrorMessage = "Please confrim Password!")]
         [Compare("Password", ErrorMessage = "Password doesn't match!")]
         public string PasswordConfirm { get; set; }
+
+        public bool Is_Active { get; set; } = true;
     }
 }
