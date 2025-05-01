@@ -205,7 +205,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-danger" id="logoutBtn">Logout</a>
                 </div>
             </div>
         </div>
@@ -232,6 +232,13 @@
 		$("#sessionUserName").html(user.username);
            
 		});
+        $("#logoutBtn").click(function(){
+            if(sessionStorage.getItem("token") != "" || sessionStorage.getItem("token") != null){
+                sessionStorage.removeItem("token");
+                location.href="/Login";
+                return false;
+            }
+        });
         var token = sessionStorage.getItem("token");
         var user = GetUserFromToken(token);
         
