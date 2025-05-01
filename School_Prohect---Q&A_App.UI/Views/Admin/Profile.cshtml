@@ -1,0 +1,133 @@
+﻿
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Profile</h1>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4" id="formHeader">Update User</h2>
+                    <input type="hidden" id="userIdInput" />
+
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Username" id="userNameInput" autocomplete="off" />
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Email" id="userEmailInput" autocomplete="off" />
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control" placeholder="Password" id="userPasswordInput" autocomplete="off" />
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password" class="form-control" placeholder="Confirm Password" id="userPasswordConfirmInput" autocomplete="off" />
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="userStatusInput">
+                        <label class="form-check-label" for="userStatusInput">
+                            Active
+                        </label>
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-warning" id="updateProfileBtn">Update</button>
+                    </div>
+
+                    <div id="divResult" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+<script>
+$(document).ready(function(){
+    var apiBaseUrl="@ViewBag.ApiBaseURL";
+    var id = user.id
+    GetUser();
+
+
+    function GetUser(){
+
+    $.ajax({
+        url: apiBaseUrl + "/User/"+ id,
+        type: "GET",
+        headers: {
+           "Authorization": "Bearer " + token
+        },
+        contentType: "application/json",
+        success: function (d) {
+            
+            $("#userIdInput").val(id);
+                 
+            $("#userNameInput").val(d.userName);
+            $("#userEmailInput").val(d.email);
+            $("#userNameInput").focus();
+            $("#userStatusInput").prop('checked', d.is_Active);
+        },
+        error:  function (d) {},
+    });
+    }
+
+    $("#updateProfileBtn").click(function(){
+            $("#divResult").hide();
+                var newUser = new Object();
+                newUser.userName = $("#userNameInput").val();
+                newUser.email = $("#userEmailInput").val();
+                newUser.password = $("#userPasswordInput").val();
+                newUser.passwordConfirm = $("#userPasswordConfirmInput").val();
+                newUser.is_Active = $("#userStatusInput").is(':checked');
+                newUser.id = $("#userIdInput").val();
+
+                $.ajax({
+                   url: apiBaseUrl + "/User",
+                   type: "PUT",
+                   headers: {
+                    "Authorization": "Bearer " + token
+                    },
+                   data: JSON.stringify(newUser),
+                   contentType: "application/json",
+                   success: function (d) {
+                   $("#divResult").fadeIn(1000);
+                       $("#divResult").removeClass("alert-danger").addClass("alert alert-success m-3 ");
+                       $("#divResult").html("User Updated Successfuly!");
+                       $("#divResult").fadeOut(1000);
+                     var loginUser = {
+                         userName : newUser.userName,
+                         password : newUser.password
+                     };
+                         $.ajax({
+                         url: apiBaseUrl + "/User/SignIn",
+                         type: "POST",
+                         data: JSON.stringify(loginUser),
+                         contentType: "application/json",
+                         success: function (d) {
+                           sessionStorage.setItem("token", d.token);
+                           $("#sessionUserName").html(loginUser.userName);
+                      
+                         },
+                         error:  function (d) { },
+                         });
+                   },
+                   error:  function (d) {
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").removeClass("alert-success").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
+                });
+    })
+
+});
+</script>
+}

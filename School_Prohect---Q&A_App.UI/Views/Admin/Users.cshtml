@@ -281,21 +281,6 @@ $(document).ready(function(){
                        $("#divResult").fadeOut(1000);
                     ClearInputs();
                     GetUserList();
-                    // var loginUser = {
-                    //     userName : newUser.userName,
-                    //     password : newUser.password
-                    // };
-                    //     $.ajax({
-                    //     url: apiBaseUrl + "/User/SignIn",
-                    //     type: "POST",
-                    //     data: JSON.stringify(loginUser),
-                    //     contentType: "application/json",
-                    //     success: function (d) {
-                    //       sessionStorage.setItem("token", d.token);
-                      
-                    //     },
-                    //     error:  function (d) { },
-                    //     });
                    },
                    error:  function (d) {
                    var errors = d.responseJSON.errors;

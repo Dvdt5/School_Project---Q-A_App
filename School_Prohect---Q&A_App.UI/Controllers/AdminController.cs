@@ -28,6 +28,14 @@ namespace School_Prohect___Q_A_App.UI.Controllers
             return View();
         }
 
+        [Route("Profile")]
+        public IActionResult Profile(int id)
+        {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
+            return View();
+        }
+
         [Route("Category")]
         public IActionResult Categories(int id)
         {
