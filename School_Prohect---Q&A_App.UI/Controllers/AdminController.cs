@@ -67,5 +67,10 @@ namespace School_Prohect___Q_A_App.UI.Controllers
             ViewBag.ApiBaseURL = ApiBaseURL;
             return View();
         }
+
+        public IActionResult NoAccess()
+        {
+            return View();
+        }
     }
 }

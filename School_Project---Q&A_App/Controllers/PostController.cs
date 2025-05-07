@@ -9,7 +9,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Member , Admin")]
     public class PostController : Controller
     {
         private readonly PostRepository _postRepository;
@@ -22,6 +22,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<PostDto>> List()
         {
             var posts = await _postRepository.GetAllAsync();
@@ -30,6 +31,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<PostDto> GetById(int id)
         {
             var post = await _postRepository.GetByIdAsync(id);

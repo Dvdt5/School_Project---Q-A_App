@@ -9,7 +9,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("Category")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Member , Admin")]
     public class CategoryController : Controller
     {
         private readonly CategoryRepository _categoryRepository;
@@ -24,6 +24,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<CategoryDto>> List()
         {
             var categories = await _categoryRepository.GetAllAsync();
@@ -32,6 +33,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<CategoryDto> GetById(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);

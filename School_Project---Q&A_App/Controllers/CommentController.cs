@@ -9,7 +9,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Member , Admin")]
     public class CommentController : Controller
     {
         private readonly CommentRepository _commentRepository;
@@ -22,6 +22,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<CommentDto>> List()
         {
             var comments = await _commentRepository.GetAllAsync();
@@ -30,6 +31,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<CommentDto> GetById(int id)
         {
             var comment = await _commentRepository.GetByIdAsync(id);
