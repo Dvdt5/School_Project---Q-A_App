@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using School_Project___Q_A_App.DTOs;
 using School_Project___Q_A_App.Models;
@@ -13,12 +14,14 @@ namespace School_Project___Q_A_App.Controllers
     public class PostController : Controller
     {
         private readonly PostRepository _postRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
-        public PostController(PostRepository postRepository, IMapper mapper)
+        public PostController(PostRepository postRepository, IMapper mapper, Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager)
         {
             _postRepository = postRepository;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -36,6 +39,8 @@ namespace School_Project___Q_A_App.Controllers
         {
             var post = await _postRepository.GetByIdAsync(id);
             var postDto = _mapper.Map<PostDto>(post);
+            var user = _userManager.Users.Where(s => s.Id == postDto.UserId).SingleOrDefault();
+            postDto.User = user;
             return postDto;
         }
 
@@ -49,7 +54,8 @@ namespace School_Project___Q_A_App.Controllers
             };
             postDto.Created = DateTime.Now;
             postDto.Updated = DateTime.Now;
-           
+            postDto.AnswerCount = 0;
+
             var post = _mapper.Map<Post>(postDto);
             await _postRepository.AddAsync(post);
             return response;

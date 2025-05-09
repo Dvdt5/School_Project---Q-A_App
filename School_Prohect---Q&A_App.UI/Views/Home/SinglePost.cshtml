@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewData["Title"] = "SinglePost";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 col-md-9">
+    <div id="errorDiv" style="display: none;">
+    </div>
+    <!-- Post -->
+    <div class="card mb-4 px-3">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-3 col-3">
+                <img src="~/UserImgs/default_user.jpg" class="col-2 rounded-circle me-2" alt="User Avatar">
+                <div>
+                    <strong id="postOwnerName">JaneDoe</strong><br>
+                    <small id="postCreationDate"  class="text-muted">Posted on May 9, 2025</small>
+                </div>
+            </div>
+            <h2 class="card-title" id="postTitle" >How do I create a single post page using Bootstrap?</h2>
+            <p class="card-text col-9 text-secondary" id="postDescription" >
+                I'm building a Q&A website and want to create a clean and responsive single post page. I am using Bootstrap. Any layout examples or templates?
+            </p>
+        </div>
+    </div>
+
+    <!-- Answers -->
+    <h4 class="mb-3">Answers</h4>
+    <div id="answersContainer">
+    </div>
+
+    <!-- Answer form -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Your Answer</h5>
+            <form>
+                <div class="mb-3">
+                    <textarea class="form-control" rows="4" placeholder="Write your answer here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Answer</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+
+    $(document).ready(function(){
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+            var currentPostId="@ViewBag.SinglePostId";
+            GetPost();
+            GetCommentList();
+            function GetPost(){
+                $.ajax({
+                 url: apiBaseUrl + "/Post/" + currentPostId,
+                 type: "GET",
+               
+                 success: function (d) {
+                       
+                        
+                        DisplayPost(d);
+                 },
+                 error:  function (d) {
+                      
+                    $("#errorDiv").fadeIn(1000);
+                   
+                   $("#errorDiv").addClass("alert alert-danger m-3 ");
+                   $("#errorDiv").html("Could not fetch the data! Try again later...");
+                 },
+                });
+            }
+
+            function DisplayPost(data){
+
+                $("#postOwnerName").html();
+                $("#postCreationDate").html();
+                $("#postTitle").html();
+                $("#postDescription").html();
+
+                $("#postOwnerName").html(data.user.userName);
+                $("#postCreationDate").html(data.created);
+                $("#postTitle").html(data.title);
+                $("#postDescription").html(data.content);
+                
+
+            }
+
+            function GetCommentList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Comment/CommentByPost/" + currentPostId,
+                 type: "GET",
+                 
+                 success: function (d) {
+              
+                        DisplayComment(d);
+                 },
+                 error:  function (d) {
+                    
+                    $("#errorDiv").fadeIn(1000);
+                   
+                   $("#errorDiv").addClass("alert alert-danger m-3 ");
+                   $("#errorDiv").html("Could not fetch the data! Try again later...");
+                 },
+                });
+            }
+
+            function DisplayComment(data){
+                
+
+
+                $("#answersContainer").html();
+
+                var row="";
+                $.each(data,function(i,item){
+                    row += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 col-3">
+                                <img src="~/UserImgs/default_user.jpg" class="col-2 rounded-circle me-2" alt="User Avatar">
+                                <strong>${item.user.userName}</strong>
+                            </div>
+                            <p class="card-text">${item.content}</p>
+                        </div>
+                    </div>
+                `;
+                    
+                });
+                if (data.length === 0){
+                    $("#answersContainer").html();
+                        $("#answersContainer").html(`<div class="card mb-3">
+                            <div class="card-body">
+                                <p class="card-text">There is no answer to this post for now.</p>
+                            </div>
+                        </div>`);
+                } else {
+
+                $("#answersContainer").html(row);
+                }
+
+            }
+
+    });
+</script>
+
+}

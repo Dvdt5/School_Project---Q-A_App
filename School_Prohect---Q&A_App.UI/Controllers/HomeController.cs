@@ -22,6 +22,14 @@ namespace School_Prohect___Q_A_App.UI.Controllers
             return View();
         }
 
+        public IActionResult SinglePost(int id)
+        {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
+            ViewBag.SinglePostId = id;
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

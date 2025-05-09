@@ -13,22 +13,7 @@
         <div class="col-md-8">
             <h3 class="mb-4">Recently Asked Questions</h3>
             <ul class="list-group" id="allPostsContainer">
-                <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">How to center a div using Bootstrap 5?</a>
-                    <small class="d-block text-muted">Asked 10 minutes ago · 2 answers</small>
-                </li>
-                <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">What’s the difference between px and rem?</a>
-                    <small class="d-block text-muted">Asked 30 minutes ago · 5 answers</small>
-                </li>
-                <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">How to make a responsive navbar collapse?</a>
-                    <small class="d-block text-muted">Asked 1 hour ago · 1 answer</small>
-                </li>
-                <li class="list-group-item">
-                    <a href="#" class="text-decoration-none">How to use Bootstrap modal with dynamic content?</a>
-                    <small class="d-block text-muted">Asked 2 hours ago · 3 answers</small>
-                </li>
+                
             </ul>
         </div>
 
@@ -103,8 +88,8 @@
                     $("#allPostsContainer").html();
                 var row="";
                 $.each(data,function(i,item){
-                    row += `<li href="#" class="list-group-item list-group-item-action">`;
-                    row += `<a href="#" class="text-decoration-none">${item.title}</a>`;
+                    row += `<li class="list-group-item">`;
+                    row += `<a href="Home/SinglePost/${item.id}" class="text-decoration-none">${item.title}</a>`;
                     row += `<small class="d-block text-muted">${item.created}</small>`;
                     row+= "</li>";
                 });
