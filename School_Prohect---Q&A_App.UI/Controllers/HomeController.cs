@@ -30,6 +30,20 @@ namespace School_Prohect___Q_A_App.UI.Controllers
             return View();
         }
 
+        public IActionResult SignIn()
+        {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
+            return View();
+        }
+
+        public IActionResult Register()
+        {
+            var ApiBaseURL = _configuration["ApiBaseURL"];
+            ViewBag.ApiBaseURL = ApiBaseURL;
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
