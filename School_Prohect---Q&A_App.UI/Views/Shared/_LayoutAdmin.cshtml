@@ -241,9 +241,9 @@
         });
         var token = sessionStorage.getItem("token");
         var user = GetUserFromToken(token);
-		if (user.userRole == "User"){
-			location.href="/NoAccess";
-			return false;
+		if (user.userRole == "NewUser"){
+			location.href="/Admin/NoAccess";
+			
 		}
         
     </script>

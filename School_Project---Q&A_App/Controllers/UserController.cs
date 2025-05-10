@@ -133,6 +133,52 @@ namespace School_Project___Q_A_App.Controllers
 
         }
 
+        [HttpPost("Register")]
+        [AllowAnonymous]
+        public async Task<ResultDto> Register(RegisterDto userDto)
+        {
+            var userAdd = _mapper.Map<AppUser>(userDto);
+            userAdd.UserName = userDto.UserName;
+            userAdd.Created = DateTime.Now;
+            userAdd.Updated = DateTime.Now;
+            userAdd.Is_Active = userDto.Is_Active;
+
+            var identityResult = await _userManager.CreateAsync(userAdd, userAdd.Password);
+
+            if (!identityResult.Succeeded)
+            {
+                var errorMessages = new List<string>();
+                foreach (var item in identityResult.Errors)
+                {
+                    errorMessages.Add("<p>" + item.Description + "<p>");
+                }
+                var responseBad = new ResultDto
+                {
+                    Success = false,
+                    Message = errorMessages[0],
+                };
+                return responseBad;
+            }
+
+            var user = await _userManager.FindByNameAsync(userDto.UserName);
+            var roleExist = await _roleManager.RoleExistsAsync("NewUser");
+            if (!roleExist)
+            {
+                var role = new AppRole { Name = "NewUser" };
+                await _roleManager.CreateAsync(role);
+            }
+
+
+            await _userManager.AddToRoleAsync(user, "NewUser");
+            var response = new ResultDto
+            {
+                Success = true,
+                Message = "User Added Successfuly!",
+            };
+            return response;
+        }
+
+
         [HttpPost("SignIn")]
         [AllowAnonymous]
         public async Task<LoginResponseDto> SignIn(LoginDto dto)
