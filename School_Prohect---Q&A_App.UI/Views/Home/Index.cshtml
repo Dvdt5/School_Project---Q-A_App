@@ -89,6 +89,7 @@
                 var row="";
                 $.each(data,function(i,item){
                     row += `<li class="list-group-item">`;
+                    row += `<small class="d-block text-muted">${item.answerCount} Answer</small>`;
                     row += `<a href="Home/SinglePost/${item.id}" class="text-decoration-none">${item.title}</a>`;
                     row += `<small class="d-block text-muted">${item.created}</small>`;
                     row+= "</li>";

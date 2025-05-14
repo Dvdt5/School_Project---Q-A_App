@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using School_Project___Q_A_App.DTOs;
 using School_Project___Q_A_App.Models;
@@ -9,18 +10,22 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Roles = "Member , Admin")]
+    [Authorize(Roles = "NewUser , Member , Admin")]
     public class CommentController : Controller
     {
         private readonly CommentRepository _commentRepository;
         private readonly PostRepository _postRepository;
+        private readonly UserRepository _userRepository;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
-        public CommentController(CommentRepository commentRepository, IMapper mapper, PostRepository postRepository)
+        public CommentController(CommentRepository commentRepository, IMapper mapper, PostRepository postRepository, UserRepository userRepository, UserManager<AppUser> userManager)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
             _postRepository = postRepository;
+            _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -42,6 +47,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "NewUser , Member , Admin")]
         public async Task<ResultDto> Add(CommentDto commentDto)
         {
             ResultDto response = new ResultDto
@@ -49,12 +55,19 @@ namespace School_Project___Q_A_App.Controllers
                 Success = true,
                 Message = "Comment Created Successfuly!"
             };
-            commentDto.Created = DateTime.Now;
-            commentDto.Updated = DateTime.Now;
-            commentDto.Post.AnswerCount++;
+            var newComment = new Comment();
+            newComment.Content = commentDto.Content;
+            newComment.PostId = commentDto.PostId;
+            newComment.UserId = commentDto.UserId;
+            var post = await _postRepository.GetByIdAsync(commentDto.PostId);
+            newComment.Post = post;
+            newComment.Post.AnswerCount += 1;
+            newComment.Created = DateTime.Now;
+            newComment.Updated = DateTime.Now;
+            
 
-            var comment = _mapper.Map<Comment>(commentDto);
-            await _commentRepository.AddAsync(comment);
+            
+            await _commentRepository.AddAsync(newComment);
             return response;
         }
 
@@ -76,6 +89,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "NewUser , Member , Admin")]
         public async Task<ResultDto> Delete(int id)
         {
             ResultDto response = new ResultDto
@@ -84,7 +98,7 @@ namespace School_Project___Q_A_App.Controllers
                 Message = "Comment Deleted Successfuly!"
             };
             var comment = await _commentRepository.GetByIdAsync(id);
-            comment.Post.AnswerCount--;
+            
             await _commentRepository.DeleteAsync(id);
             return response;
         }
@@ -92,15 +106,17 @@ namespace School_Project___Q_A_App.Controllers
 
         [HttpGet("CommentByPost/{postId}")]
         [AllowAnonymous]
-        public async Task<List<CommentDto>> GetCommentByPostId(int id)
+        public async Task<List<CommentDto>> GetCommentByPostId(int postId)
         {
             var comments = await _commentRepository.GetAllAsync();
-            var returnList = new List<Comment>();
+            var returnList = new List<CommentDto>();
             foreach (var comment in comments)
             {
-                if (comment.PostId == id)
+                if (comment.PostId == postId)
                 {
-                    returnList.Add(comment);
+                    var dtoComment = _mapper.Map<CommentDto>(comment);
+                    dtoComment.UserName = _userManager.Users.Where(s => s.Id == dtoComment.UserId).SingleOrDefault().UserName;
+                    returnList.Add(dtoComment);
                 }
                 
             }
