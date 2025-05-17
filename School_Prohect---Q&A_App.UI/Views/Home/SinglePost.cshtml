@@ -89,6 +89,7 @@
 
                 
                 var newComment = new Object();
+                newComment.userName = GetUserFromToken(sessionStorage.getItem("token")).userName;
                 newComment.postId = $("#postId").html();
                 newComment.content = $("#answerInput").val();
                 newComment.userId = GetUserFromToken(sessionStorage.getItem("token")).id;
@@ -98,7 +99,7 @@
                     url: apiBaseUrl + "/Comment",
                     type: "POST",
                         headers: {
-                        "Authorization": "Bearer " + token
+                        "Authorization": "Bearer " + commentToken
                         },
                     data: JSON.stringify(newComment),
                     contentType: "application/json",

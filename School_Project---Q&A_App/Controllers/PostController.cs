@@ -10,7 +10,7 @@ namespace School_Project___Q_A_App.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Roles = "Member , Admin")]
+    [Authorize(Roles = "NewUser , Member , Admin")]
     public class PostController : Controller
     {
         private readonly PostRepository _postRepository;
@@ -45,6 +45,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "NewUser , Member , Admin")]
         public async Task<ResultDto> Add(PostDto postDto)
         {
             ResultDto response = new ResultDto
@@ -82,6 +83,7 @@ namespace School_Project___Q_A_App.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "NewUser , Member , Admin")]
         public async Task<ResultDto> Delete(int id)
         {
             ResultDto response = new ResultDto

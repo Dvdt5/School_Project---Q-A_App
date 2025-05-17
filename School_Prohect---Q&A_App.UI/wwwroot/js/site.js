@@ -20,7 +20,7 @@ function GetUserFromToken(token) {
     var userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
     var user = {
         id: userId,
-        username: userName,
+        userName: userName,
         userRole: userRole
     }
     return user;

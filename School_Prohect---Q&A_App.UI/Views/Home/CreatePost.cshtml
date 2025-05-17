@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewData["Title"] = "CreatePost";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Ask a Question</h2>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-md-6 card p-3">
+            <div>
+                <!-- Title input -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text"
+                           class="form-control"
+                           id="postTitleInput"
+                           placeholder="Enter title" />
+                </div>
+
+                <!-- Text content input -->
+                <div class="mb-3">
+                    <label for="content" class="form-label">Content</label>
+                    <textarea class="form-control"
+                              id="postContentInput"
+                              rows="5"
+                              placeholder="Enter your content here"></textarea>
+                </div>
+                <select class="form-control" id="postCategoryInput">
+                </select>
+                <div id="divResult" style="display: none;"></div>
+
+                <!-- Submit button -->
+                <button type="button" id="addPostBtn"  class="btn btn-primary m-3">Submit</button>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+             if(sessionStorage.getItem("token")=="" || sessionStorage.getItem("token")==null){
+				 location.href = "/Home/SignIn";
+             }
+
+			 var apiBaseUrl="@ViewBag.ApiBaseURL";
+
+
+			 GetCategoryList();
+
+
+            function GetCategoryList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Category",
+                 type: "GET",
+                 headers: {
+                    "Authorization": "Bearer " + sessionStorage.getItem("token")
+                 },
+                 success: function (d) {
+                        CategoryToForm(d)
+                 },
+                 error:  function (d) {},
+                });
+            }
+
+            function CategoryToForm(data){
+                $("#postCategoryInput").empty();
+                var row="";
+                $.each(data, function(i, item){
+                    row += `<option value="${item.id}">${item.name}</option>`;
+                });
+                $("#postCategoryInput").append(row);
+            }
+
+            $("#addPostBtn").click(function(){
+                var title = $("#postTitleInput").val();
+                var content = $("#postContentInput").val();
+                var categoryId = $("#postCategoryInput").find(":selected").val();
+                var is_Active = true;
+                
+
+                var newPost = new Object();
+                newPost.title = title;
+                newPost.content = content;
+                newPost.categoryId = categoryId;
+                newPost.userId = GetUserFromToken(sessionStorage.getItem("token")).id;
+                newPost.is_Active = is_Active;
+                
+                
+
+                $.ajax({
+                   url: apiBaseUrl + "/Post",
+                   type: "POST",
+                   headers: {
+                   "Authorization": "Bearer " + sessionStorage.getItem("token")
+                   },
+                   data: JSON.stringify(newPost),
+                   contentType: "application/json",
+                   success: function (d) {
+                        GetPostList();
+                        ClearInputs();
+                   },
+                   error:  function (d) {
+                  
+                   var errors = d.responseJSON.errors;
+
+                   $("#divResult").fadeIn(1000);
+
+                   $("#divResult").addClass("alert alert-danger m-3 ");
+                   $("#divResult").html(Object.values(errors)[0][0]);
+                   },
+
+                });
+            });
+
+        });
+
+
+    </script>
+}
