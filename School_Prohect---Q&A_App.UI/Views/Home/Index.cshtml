@@ -11,7 +11,7 @@
 
         <!-- Main Content: Recently Asked Questions -->
         <div class="col-md-8">
-            <h3 class="mb-4">Recently Asked Questions</h3>
+            <h3 id="mainHead" class="mb-4">Recently Asked Questions</h3>
             <ul class="list-group" id="allPostsContainer">
                 
             </ul>
@@ -53,7 +53,7 @@
                     $("#categoryLinkList").html();
                 var row="";
                 $.each(data,function(i,item){
-                    row += `<a href="#" class="list-group-item list-group-item-action">`;
+                    row += `<a data-id=${item.id} class="list-group-item list-group-item-action categoryLinkItem">`;
                     row += item.name;
                     row+= "</a>";
                 });
@@ -103,6 +103,27 @@
                 }
 
             }
+
+            $(document).on("click",".categoryLinkItem",function(){
+                var id = $(this).attr("data-id");
+                var nameC = $(this).text();
+                $.ajax({
+                 url: apiBaseUrl + "/Post/GetByCategoryId/" + id,
+                 type: "GET",
+                 
+                 success: function (d) {
+                        
+                        
+                        $("#mainHead").html(nameC);
+                        PostsToTable(d);
+                 },
+                 error:  function (d) {
+                    
+                    $("#allPostsContainer").html();
+                    $("#allPostsContainer").html("<p>No Post Found</p>");
+                 },
+                });
+            });
 
     });
 </script>

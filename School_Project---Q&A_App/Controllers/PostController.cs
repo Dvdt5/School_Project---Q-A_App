@@ -44,6 +44,16 @@ namespace School_Project___Q_A_App.Controllers
             return postDto;
         }
 
+        [HttpGet("GetByCategoryId/{categoryId}")]
+        [AllowAnonymous]
+        public async Task<List<PostDto>> GetByCategoryId(int categoryId)
+        {
+            var posts = await _postRepository.GetAllAsync();
+            var postDtos = _mapper.Map<List<PostDto>>(posts);
+            var filteredPosts = postDtos.Where(s => s.CategoryId == categoryId).ToList();
+            return filteredPosts;
+        }
+
         [HttpPost]
         [Authorize(Roles = "NewUser , Member , Admin")]
         public async Task<ResultDto> Add(PostDto postDto)
