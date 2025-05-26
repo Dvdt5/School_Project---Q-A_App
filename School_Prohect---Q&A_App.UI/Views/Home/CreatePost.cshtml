@@ -101,11 +101,9 @@
                    data: JSON.stringify(newPost),
                    contentType: "application/json",
                    success: function (d) {
-                        GetPostList();
-                        ClearInputs();
+                        location.href = "/Home"
                    },
                    error:  function (d) {
-                  
                    var errors = d.responseJSON.errors;
 
                    $("#divResult").fadeIn(1000);

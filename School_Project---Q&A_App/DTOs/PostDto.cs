@@ -15,5 +15,6 @@ namespace School_Project___Q_A_App.DTOs
         public string UserId { get; set; }
         public AppUser? User { get; set; }
         public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

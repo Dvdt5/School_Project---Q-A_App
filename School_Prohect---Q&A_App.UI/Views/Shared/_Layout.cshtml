@@ -23,15 +23,15 @@
                         <a class="nav-link" asp-action="CreatePost">Ask a Question</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">My Questions</a>
+                        <a class="nav-link" asp-action="MyPosts">My Questions</a>
                     </li>
                 </ul>
             </div>
 
             <!-- Right Buttons -->
             <div class="d-flex ms-auto">
-                <a asp-action="SignIn" id="signInBtn" ><button class="btn btn-outline-light me-2">Login</button></a>
-                <a asp-action="Register" id="registerBtn" ><button class="btn btn-primary">Sign Up</button></a>
+                <a asp-controller="Home" asp-action="SignIn" id="signInBtn" ><button class="btn btn-outline-light me-2">Login</button></a>
+                <a asp-controller="Home" asp-action="Register" id="registerBtn" ><button class="btn btn-primary">Sign Up</button></a>
                 <a id="logoutBtn"><button class="btn btn-danger">Log Out</button></a>
             </div>
 

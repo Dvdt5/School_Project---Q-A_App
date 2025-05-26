@@ -22,6 +22,7 @@
             <p class="card-text col-9 text-secondary" id="postDescription" >
                 I'm building a Q&A website and want to create a clean and responsive single post page. I am using Bootstrap. Any layout examples or templates?
             </p>
+            <button id="deletePostBtn" style="display:none;" class="btn btn-danger position-absolute top-0 end-0 m-3" type="button">Delete Post</button>
         </div>
     </div>
 
@@ -48,6 +49,8 @@
 <script>
 
     $(document).ready(function(){
+            
+            
             var apiBaseUrl="@ViewBag.ApiBaseURL";
             var currentPostId="@ViewBag.SinglePostId";
             
@@ -63,6 +66,12 @@
                        
                         
                         DisplayPost(d);
+                        if(sessionStorage.getItem("token")!="" || sessionStorage.getItem("token")!=null){
+                            if (GetUserFromToken(sessionStorage.getItem("token")).id == d.userId){
+                                $("#deletePostBtn").fadeIn();
+                            }
+                            
+                        }
                         currPost = d;
                  },
                  error:  function (d) {
@@ -188,7 +197,44 @@
                 }
 
             }
+            $("#deletePostBtn").click(function(){
+                if(sessionStorage.getItem("token")=="" || sessionStorage.getItem("token")==null){
+                    if (GetUserFromToken(sessionStorage.getItem("token")).id != d.userId){
+                        return false;
+                    }
+                            
+                }
+                var id = currentPostId;
 
+                $.ajax({
+                   url: apiBaseUrl + "/Post/"+ id,
+                   type: "DELETE",
+                   headers: {
+                   "Authorization": "Bearer " + sessionStorage.getItem("token")
+                   },
+                   contentType: "application/json",
+                   success: function (d) {
+                       
+                    if (d.success) {
+                      
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-success m-3 ");
+                       $("#divResult").html(d.message);
+                       $("#divResult").fadeOut(1000);
+
+                       location.href = "/MyPosts"
+                   } else {
+                       $("#divResult").fadeIn(1000);
+                       $("#divResult").addClass("alert alert-danger m-3 ");
+                       $("#divResult").html("Something went wrong!");
+                       $("#divResult").fadeOut(1000);
+                   }
+                   },
+                   error:  function (d) {
+                       
+                   },
+                });
+            });
     });
 </script>
 

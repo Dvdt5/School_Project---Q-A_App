@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewData["Title"] = "MyPosts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container my-5">
+<h1>My Posts</h1>
+    <div class="row">
+        <!-- Sidebar with Categories -->
+        <div class="col-md-1 mb-4">
+            
+        </div>
+
+        <!-- Main Content: Recently Asked Questions -->
+        <div class="col-md-8">
+            <h3 id="mainHead" class="mb-4">My Questions</h3>
+            <ul class="list-group" id="allPostsContainer">
+                
+            </ul>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+
+    $(document).ready(function(){
+            if(sessionStorage.getItem("token")=="" || sessionStorage.getItem("token")==null){
+                location.href="/Home";
+                return false;
+            }
+
+            var apiBaseUrl="@ViewBag.ApiBaseURL";
+            GetPostList();
+            
+
+            function GetPostList(){
+                $.ajax({
+                 url: apiBaseUrl + "/Post/GetByUserId/" + GetUserFromToken(sessionStorage.getItem("token")).id , 
+                 type: "GET",
+                 headers: {
+                   "Authorization": "Bearer " + sessionStorage.getItem("token")
+                   },
+                 success: function (d) {
+              
+                        PostsToTable(d);
+                 },
+                 error:  function (d) {
+                    
+                    $("#allPostsContainer").html();
+                    $("#allPostsContainer").html("<p>No Post Found</p>");
+                 },
+                });
+            }
+
+            function PostsToTable(data){
+                    $("#allPostsContainer").html();
+                var row="";
+                $.each(data,function(i,item){
+                    row += `<li class="list-group-item">`;
+                    row += `<small class="d-block text-muted text-end position-absolute end-0 m-3">${item.categoryName}</small>`;
+                    row += `<small class="d-block text-muted">${item.answerCount} Answer<span></span></small>`;
+                    row += `<a href="SinglePost/${item.id}" class="text-decoration-none">${item.title}</a>`;
+                    row += `<small class="d-block text-muted">${item.created}</small>`;
+                    row+= "</li>";
+                });
+                if (data.length === 0){
+                    $("#allPostsContainer").html();
+                    $("#allPostsContainer").html("<p>No Post Found</p>");
+                } else {
+
+                $("#allPostsContainer").html(row);
+                }
+
+            }
+
+           
+
+    });
+</script>
+
+}

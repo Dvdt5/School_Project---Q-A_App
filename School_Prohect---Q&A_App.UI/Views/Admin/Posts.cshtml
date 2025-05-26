@@ -36,6 +36,7 @@
         <div class=" card card-body">
                 <h2 class="mb-3" id="formHeader">Create Post</h2>
             <input type="hidden" id="postIdInput" />
+            <input type="hidden" id="postUserIdInput" />
             <input type="text"
                    class="form-control mb-3"
                    placeholder="Title"
@@ -165,7 +166,7 @@
                 var content = $("#postContentInput").val();
                 var categoryId = $("#postCategoryInput").find(":selected").val();
                 var is_Active = $("#postStatusInput").is(':checked');
-                var userId = user.id;
+                var userId = GetUserFromToken(sessionStorage.getItem("token")).id;
                 
                 var newPost = new Object();
                 newPost.title = title;
@@ -222,7 +223,7 @@
                success: function (d) {
                    $("#formHeader").html("Update Post");
                    $("#postIdInput").val(id);
-
+                   $("#postUserIdInput").val(d.userId);
                    $("#postTitleInput").val(d.title);
                    $("#postContentInput").val(d.content);
                    $("#postTitleInput").focus();
@@ -284,6 +285,7 @@
                 newPost.content = content;
                 newPost.categoryId = categoryId;
                 newPost.id = $("#postIdInput").val();
+                newPost.userId = $("#postUserIdInput").val();
                 newPost.is_Active = is_Active;
 
                 $.ajax({
@@ -304,7 +306,7 @@
                    },
                    error:  function (d) {
                    var errors = d.responseJSON.errors;
-
+                   console.log(d)
                    $("#divResult").fadeIn(1000);
 
                    $("#divResult").addClass("alert alert-danger m-3 ");
